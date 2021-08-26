@@ -1,0 +1,16 @@
+{
+  "name": "suprsend-browser-sdk",
+  "version": "1.0.0",
+  "description": "This is sdk used to integrate suprsend functionality in javascript applications",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "suprsend",
+    "suprsend-browser",
+    "suprsend-browser-sdk"
+  ],
+  "author": "Sivaram Katta",
+  "license": "ISC"
+}
