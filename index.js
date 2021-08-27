@@ -2,11 +2,11 @@
 
 // suprsend sdk related constants
 var constants={
-    distinct_id:"_suprsend_anon_id"
+    distinct_id:"_suprsend_dist_id"
 }
 
 // suprsend sdk related config
-const config = {
+var config = {
     api_url:"https://collector.suprsend.workers.dev"
 }
 
@@ -46,19 +46,21 @@ remove_cookie: function(name) {
 }
 
 // api calls function
-function call_api(env_api_key, distinct_id, event_name, properties){
-//    call api
+function call_api(body){
+fetch(config.api_url, {method:"post",body: JSON.stringify(body)})
+    .then(()=>console.log("success"))
+    .catch(err=>console.log("error occured", err))
 }
 
 // initializing supersend library function
 function SuprSend(){}
-const suprSendInstance;
+var suprSendInstance;
 
 function create_instance(ENV_API_Key){
-    let anon_id=utils.get_cookie(constants.distinct_id);
+    var anon_id=utils.get_cookie(constants.distinct_id);
     if(!anon_id){
        anon_id = utils.uuid();
-       utils.set_cookie(constants.distinct_id,uuid);
+       utils.set_cookie(constants.distinct_id,anon_id);
     }
     
     if(suprSendInstance){
@@ -66,8 +68,7 @@ function create_instance(ENV_API_Key){
         suprSendInstance.distinct_id=utils.get_cookie(constants.distinct_id);
         return suprSendInstance
     }
-    suprSendInstance.distinct_id=utils.get_cookie(constants.distinct_id);
-    suprSendInstance={ENV_API_Key:ENV_API_Key};
+    suprSendInstance={ENV_API_Key:ENV_API_Key, distinct_id:utils.get_cookie(constants.distinct_id)};
     return suprSendInstance
 }
 
@@ -76,8 +77,13 @@ SuprSend.prototype.getInstance =function(ENV_API_Key) {
 }
 
 SuprSend.prototype.identify=function(unique_id){
-    // call api with anon_id, unique_id
-    call_api(suprSendInstance.ENV_API_Key,"identify",{identified_id:unique_id,anon_id:suprSendInstance.distinct_id});
+    call_api({
+        ENV_API_Key:suprSendInstance.ENV_API_Key,
+        event:"identify",
+        properties:{
+            identified_id:unique_id,
+            anon_id:suprSendInstance.distinct_id
+        }});
 }
 
 module.exports = new SuprSend()
