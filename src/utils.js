@@ -1,3 +1,9 @@
+import {
+  browser_useragent_map,
+  browser_version_useragent_map,
+  os_useragent_map,
+} from "./constants";
+
 // suprsend sdk related util functions
 const utils = {
   uuid: function () {
@@ -47,6 +53,36 @@ const utils = {
   // local storage related functions
   localStorage_permission: function () {
     return !!window.localStorage;
+  },
+
+  browser: function () {
+    const userAgent = navigator.userAgent;
+    for (let browser_item in browser_useragent_map) {
+      for (let str of browser_useragent_map[browser_item]) {
+        if (userAgent.indexOf(str) >= 0) {
+          return browser_item;
+        }
+      }
+    }
+  },
+  browser_version: function () {
+    const userAgent = navigator.userAgent;
+    const browser = utils.browser();
+    const regex = browser_version_useragent_map[browser];
+    if (regex) {
+      const result = userAgent.match(regex);
+      if (result && result.length > 1) {
+        return result[1];
+      }
+    }
+  },
+  os: function () {
+    const userAgent = navigator.userAgent;
+    for (let i in os_useragent_map) {
+      if (userAgent.indexOf(os_useragent_map[i]) >= 0) {
+        return i;
+      }
+    }
   },
 };
 

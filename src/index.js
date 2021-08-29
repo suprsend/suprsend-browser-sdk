@@ -1,10 +1,6 @@
 import utils from "./utils";
 import config from "./config";
-
-// suprsend sdk related constants
-const constants = {
-  distinct_id: "_suprsend_dist_id",
-};
+import { constants } from "./constants";
 
 // api calls function
 function call_api(route, body, method = "post") {
@@ -36,9 +32,9 @@ function create_instance(ENV_API_Key) {
 
 SuprSend.setEnvProperties = function () {
   suprSendInstance.env_properties = {
-    os: "MAC",
-    browser: "chrome",
-    browser_version: "12.12",
+    os: utils.os(),
+    browser: utils.browser(),
+    browser_version: utils.browser_version(),
     sdk_type: "Browser",
     sdk_version: config.sdk_version,
   };
