@@ -36,7 +36,6 @@ class SuprSend {
     }
     suprSendInstance.distinct_id = distinct_id;
     SuprSend.setEnvProperties();
-    return suprSendInstance;
   }
 
   identify(unique_id) {
@@ -50,7 +49,8 @@ class SuprSend {
         },
       });
     }
-    // store unique_id in cookie and attach to suprsend instance
+    utils.set_cookie(constants.distinct_id, unique_id);
+    suprSendInstance.distinct_id = unique_id;
     suprSendInstance._user_identified = true;
   }
 
