@@ -9,6 +9,7 @@ function call_api(route, body, method = "post") {
   fetch(`${config.api_url}/${route}`, {
     method: method,
     body: JSON.stringify(body),
+    headers: { "Content-Type": "application/json" },
   })
     .then(() => console.log("success"))
     .catch((err) => console.log("error occured", err));
@@ -40,7 +41,7 @@ class SuprSend {
 
   identify(unique_id) {
     if (!suprSendInstance._user_identified) {
-      call_api("identify/", {
+      call_api("identity/", {
         ENV_API_Key: suprSendInstance.ENV_API_Key,
         event: "$identify",
         properties: {
