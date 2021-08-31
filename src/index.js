@@ -1,19 +1,9 @@
 import utils from "./utils";
 import config from "./config";
+import User from "./user";
 import { constants } from "./constants";
 
 var suprSendInstance;
-
-// api calls function
-function call_api(route, body, method = "post") {
-  fetch(`${config.api_url}/${route}`, {
-    method: method,
-    body: JSON.stringify(body),
-    headers: { "Content-Type": "application/json" },
-  })
-    .then(() => console.log("success"))
-    .catch((err) => console.log("error occured", err));
-}
 
 class SuprSend {
   static setEnvProperties() {
@@ -36,12 +26,13 @@ class SuprSend {
       utils.set_cookie(constants.distinct_id, distinct_id);
     }
     suprSendInstance.distinct_id = distinct_id;
+    this.user = new User(suprSendInstance);
     SuprSend.setEnvProperties();
   }
 
   identify(unique_id) {
     if (!suprSendInstance._user_identified) {
-      call_api("identity/", {
+      config.call_api("identity/", {
         ENV_API_Key: suprSendInstance.ENV_API_Key,
         event: "$identify",
         properties: {
@@ -56,7 +47,7 @@ class SuprSend {
   }
 
   track(event, props = {}) {
-    call_api("event/", {
+    config.call_api("event/", {
       event: event,
       distinct_id: suprSendInstance.distinct_id,
       ENV: suprSendInstance.ENV_API_Key,
@@ -68,6 +59,17 @@ class SuprSend {
         time: utils.epoch_seconds(),
       },
     });
+  }
+
+  reset() {
+    var distinct_id = utils.uuid();
+    utils.set_cookie(constants.distinct_id, distinct_id);
+    suprSendInstance = {
+      ENV_API_Key: suprSendInstance.ENV_API_Key,
+      distinct_id: distinct_id,
+    };
+    this.user = new User(suprSendInstance);
+    SuprSend.setEnvProperties();
   }
 }
 
