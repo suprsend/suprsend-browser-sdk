@@ -16,10 +16,10 @@ class SuprSend {
     };
   }
 
-  initialize(ENV_API_Key) {
+  initialize(ENV_API_KEY) {
     var distinct_id = utils.get_cookie(constants.distinct_id);
     if (!suprSendInstance) {
-      suprSendInstance = { ENV_API_Key: ENV_API_Key };
+      suprSendInstance = { ENV_API_KEY: ENV_API_KEY };
     }
     if (!distinct_id) {
       distinct_id = utils.uuid();
@@ -32,8 +32,8 @@ class SuprSend {
 
   identify(unique_id) {
     if (!suprSendInstance._user_identified) {
-      config.call_api("identity/", {
-        ENV_API_Key: suprSendInstance.ENV_API_Key,
+      utils.call_api("identity/", {
+        env: suprSendInstance.ENV_API_KEY,
         event: "$identify",
         properties: {
           identified_id: unique_id,
@@ -47,10 +47,10 @@ class SuprSend {
   }
 
   track(event, props = {}) {
-    config.call_api("event/", {
+    utils.call_api("event/", {
       event: event,
       distinct_id: suprSendInstance.distinct_id,
-      ENV: suprSendInstance.ENV_API_Key,
+      env: suprSendInstance.ENV_API_KEY,
       properties: {
         ...props,
         ...suprSendInstance.env_properties,
@@ -65,7 +65,7 @@ class SuprSend {
     var distinct_id = utils.uuid();
     utils.set_cookie(constants.distinct_id, distinct_id);
     suprSendInstance = {
-      ENV_API_Key: suprSendInstance.ENV_API_Key,
+      env: suprSendInstance.ENV_API_KEY,
       distinct_id: distinct_id,
     };
     this.user = new User(suprSendInstance);
