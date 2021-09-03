@@ -2,10 +2,10 @@
   "name": "suprsend-browser-sdk",
   "version": "1.0.0",
   "description": "This is sdk used to integrate suprsend functionality in javascript applications",
-  "main": "index.js",
+  "main": "dist/bundle.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --config webpack.config.js"
+    "build": "rm -rf dist && webpack --config webpack.config.js"
   },
   "keywords": [
     "suprsend",

@@ -3,6 +3,7 @@ import {
   browser_version_useragent_map,
   os_useragent_map,
 } from "./constants";
+import config from "./config";
 
 function uuid() {
   var dt = new Date().getTime();
@@ -82,6 +83,14 @@ function os() {
   }
 }
 
+function call_api(route, body, method = "post") {
+  fetch(`${config.api_url}/${route}`, {
+    method: method,
+    body: JSON.stringify(body),
+    headers: { "Content-Type": "application/json" },
+  }).catch((err) => console.log("SuprSend Error:", err));
+}
+
 export default {
   uuid,
   epoch_seconds,
@@ -92,4 +101,5 @@ export default {
   browser,
   browser_version,
   os,
+  call_api,
 };
