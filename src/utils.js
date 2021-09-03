@@ -88,9 +88,7 @@ function call_api(route, body, method = "post") {
     method: method,
     body: JSON.stringify(body),
     headers: { "Content-Type": "application/json" },
-  })
-    .then(() => console.log("success"))
-    .catch((err) => console.log("error occured", err));
+  }).catch((err) => console.log("SuprSend Error:", err));
 }
 
 export default {

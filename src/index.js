@@ -47,18 +47,20 @@ class SuprSend {
   }
 
   track(event, props = {}) {
-    utils.call_api("event/", {
-      event: event,
-      distinct_id: suprSendInstance.distinct_id,
-      env: suprSendInstance.ENV_API_KEY,
-      properties: {
-        ...props,
-        ...suprSendInstance.env_properties,
-        current_url: window.location.href,
-        insert_id: utils.uuid(),
-        time: utils.epoch_seconds(),
-      },
-    });
+    if (event != undefined) {
+      utils.call_api("event/", {
+        event: event,
+        distinct_id: suprSendInstance.distinct_id,
+        env: suprSendInstance.ENV_API_KEY,
+        properties: {
+          ...props,
+          ...suprSendInstance.env_properties,
+          current_url: window.location.href,
+          insert_id: utils.uuid(),
+          time: utils.epoch_seconds(),
+        },
+      });
+    }
   }
 
   reset() {

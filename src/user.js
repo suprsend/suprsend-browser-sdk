@@ -5,7 +5,16 @@ class User {
     this.instance = instance;
   }
 
-  check_props(key, value) {
+  _call_indetity(properties) {
+    utils.call_api("/identity", {
+      env: this.instance.ENV_API_KEY,
+      distinct_id: this.instance.distinct_id,
+      event: "$identify",
+      ...properties,
+    });
+  }
+
+  _check_props(key, value) {
     var body;
     if (typeof key === "string") {
       body = { [key]: value };
@@ -16,11 +25,9 @@ class User {
   }
 
   set(key, value) {
-    const body = this.check_props(key, value);
+    const body = this._check_props(key, value);
     if (body) {
-      utils.call_api("identity/", {
-        distinct_id: this.instance.distinct_id,
-        env: this.instance.ENV_API_KEY,
+      this._call_indetity({
         $set: {
           ...body,
         },
@@ -29,11 +36,9 @@ class User {
   }
 
   set_once(key, value) {
-    const body = this.check_props(key, value);
+    const body = this._check_props(key, value);
     if (body) {
-      utils.call_api("identity/", {
-        distinct_id: this.instance.distinct_id,
-        env: this.instance.ENV_API_KEY,
+      this._call_indetity({
         $set_once: {
           ...body,
         },
@@ -41,12 +46,18 @@ class User {
     }
   }
 
-  increment(key, value) {
-    const body = this.check_props(key, value);
+  increment(key, value = 1) {
+    const body = this._check_props(key, value);
     if (body) {
-      utils.call_api("identity/", {
-        distinct_id: this.instance.distinct_id,
-        env: this.instance.ENV_API_KEY,
+      let keys_list = Object.keys(body);
+      for (let i = 0; i < keys_list.length; i++) {
+        const key_value = keys_list[i];
+        const is_number = Number(body[key_value]);
+        if (!is_number) {
+          delete body[key_value];
+        }
+      }
+      this._call_indetity({
         $add: {
           ...body,
         },
@@ -55,9 +66,7 @@ class User {
   }
 
   append(key, value) {
-    utils.call_api("identity/", {
-      distinct_id: this.instance.distinct_id,
-      env: this.instance.ENV_API_KEY,
+    this._call_indetity({
       $append: {
         [key]: value,
       },
@@ -65,9 +74,7 @@ class User {
   }
 
   remove(key, value) {
-    utils.call_api("identity/", {
-      distinct_id: this.instance.distinct_id,
-      env: this.instance.ENV_API_KEY,
+    this._call_indetity({
       $remove: {
         [key]: value,
       },
@@ -75,9 +82,7 @@ class User {
   }
 
   unset(key) {
-    utils.call_api("identity/", {
-      distinct_id: this.instance.distinct_id,
-      env: this.instance.ENV_API_KEY,
+    this._call_indetity({
       $unset: [key],
     });
   }
