@@ -9,45 +9,43 @@ class User {
     utils.call_api("identity/", {
       env: this.instance.ENV_API_KEY,
       distinct_id: this.instance.distinct_id,
-      event: "$identify",
       ...properties,
     });
   }
 
-  _check_props(key, value) {
-    var body;
-    if (typeof key === "string") {
-      body = { [key]: value };
-    } else if (key instanceof Object) {
-      body = key;
+  _format_props(key, value) {
+    var formatted_data;
+    if (key instanceof Object) {
+      formatted_data = {};
+      let keys_list = Object.keys(key);
+      for (let i = 0; i < keys_list.length; i++) {
+        const value = keys_list[i];
+        if (key[value] !== undefined) {
+          formatted_data[String(value)] = key[value];
+        }
+      }
+    } else if (value != undefined) {
+      formatted_data = { [String(key)]: value };
     }
-    return body;
+    return formatted_data;
   }
 
   set(key, value) {
-    const body = this._check_props(key, value);
+    const body = this._format_props(key, value);
     if (body) {
-      this._call_indetity({
-        $set: {
-          ...body,
-        },
-      });
+      this._call_indetity({ $set: body });
     }
   }
 
   set_once(key, value) {
-    const body = this._check_props(key, value);
+    const body = this._format_props(key, value);
     if (body) {
-      this._call_indetity({
-        $set_once: {
-          ...body,
-        },
-      });
+      this._call_indetity({ $set_once: body });
     }
   }
 
   increment(key, value = 1) {
-    const body = this._check_props(key, value);
+    const body = this._format_props(key, value);
     if (body) {
       let keys_list = Object.keys(body);
       for (let i = 0; i < keys_list.length; i++) {
@@ -57,38 +55,34 @@ class User {
           delete body[key_value];
         }
       }
-      this._call_indetity({
-        $add: {
-          ...body,
-        },
-      });
+      this._call_indetity({ $add: body });
     }
   }
 
-  append(key = "", value) {
-    if (value != undefined) {
-      this._call_indetity({
-        $append: {
-          [String(key)]: value,
-        },
-      });
+  append(key, value) {
+    const body = this._format_props(key, value);
+    if (body) {
+      this._call_indetity({ $append: body });
     }
   }
 
   remove(key, value) {
-    if (value != undefined) {
-      this._call_indetity({
-        $remove: {
-          [String(key)]: value,
-        },
-      });
+    const body = this._format_props(key, value);
+    if (body) {
+      this._call_indetity({ $remove: body });
     }
   }
 
-  unset(key = "") {
-    this._call_indetity({
-      $unset: [String(key)],
-    });
+  unset(key) {
+    let formatted_data;
+    if (typeof key === "string") {
+      formatted_data = [String(key)];
+    } else if (key instanceof Array) {
+      formatted_data = key.map((item) => String(item));
+    } else {
+      return;
+    }
+    this._call_indetity({ $unset: formatted_data });
   }
 
   add_email(email = "") {
