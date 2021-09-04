@@ -6,7 +6,7 @@ class User {
   }
 
   _call_indetity(properties) {
-    utils.call_api("/identity", {
+    utils.call_api("identity/", {
       env: this.instance.ENV_API_KEY,
       distinct_id: this.instance.distinct_id,
       event: "$identify",
