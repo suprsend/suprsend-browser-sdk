@@ -48,17 +48,18 @@ class SuprSend {
 
   track(event, props = {}) {
     if (event != undefined) {
+      const formatted_data = utils.format_props({
+        ...props,
+        ...suprSendInstance.env_properties,
+        current_url: window.location.href,
+        insert_id: utils.uuid(),
+        time: utils.epoch_seconds(),
+      });
       utils.call_api("event/", {
-        event: event,
+        event: String(event),
         distinct_id: suprSendInstance.distinct_id,
         env: suprSendInstance.ENV_API_KEY,
-        properties: {
-          ...props,
-          ...suprSendInstance.env_properties,
-          current_url: window.location.href,
-          insert_id: utils.uuid(),
-          time: utils.epoch_seconds(),
-        },
+        properties: formatted_data,
       });
     }
   }

@@ -91,6 +91,23 @@ function call_api(route, body, method = "post") {
   }).catch((err) => console.log("SuprSend Error:", err));
 }
 
+function format_props(key, value) {
+  var formatted_data;
+  if (key instanceof Object) {
+    formatted_data = {};
+    let keys_list = Object.keys(key);
+    for (let i = 0; i < keys_list.length; i++) {
+      const value = keys_list[i];
+      if (key[value] !== undefined) {
+        formatted_data[String(value)] = key[value];
+      }
+    }
+  } else if (value != undefined) {
+    formatted_data = { [String(key)]: value };
+  }
+  return formatted_data;
+}
+
 export default {
   uuid,
   epoch_seconds,
@@ -102,4 +119,5 @@ export default {
   browser_version,
   os,
   call_api,
+  format_props,
 };

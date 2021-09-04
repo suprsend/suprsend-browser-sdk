@@ -13,39 +13,22 @@ class User {
     });
   }
 
-  _format_props(key, value) {
-    var formatted_data;
-    if (key instanceof Object) {
-      formatted_data = {};
-      let keys_list = Object.keys(key);
-      for (let i = 0; i < keys_list.length; i++) {
-        const value = keys_list[i];
-        if (key[value] !== undefined) {
-          formatted_data[String(value)] = key[value];
-        }
-      }
-    } else if (value != undefined) {
-      formatted_data = { [String(key)]: value };
-    }
-    return formatted_data;
-  }
-
   set(key, value) {
-    const body = this._format_props(key, value);
+    const body = utils.format_props(key, value);
     if (body) {
       this._call_indetity({ $set: body });
     }
   }
 
   set_once(key, value) {
-    const body = this._format_props(key, value);
+    const body = utils.format_props(key, value);
     if (body) {
       this._call_indetity({ $set_once: body });
     }
   }
 
   increment(key, value = 1) {
-    const body = this._format_props(key, value);
+    const body = utils.format_props(key, value);
     if (body) {
       let keys_list = Object.keys(body);
       for (let i = 0; i < keys_list.length; i++) {
@@ -60,14 +43,14 @@ class User {
   }
 
   append(key, value) {
-    const body = this._format_props(key, value);
+    const body = utils.format_props(key, value);
     if (body) {
       this._call_indetity({ $append: body });
     }
   }
 
   remove(key, value) {
-    const body = this._format_props(key, value);
+    const body = utils.format_props(key, value);
     if (body) {
       this._call_indetity({ $remove: body });
     }
