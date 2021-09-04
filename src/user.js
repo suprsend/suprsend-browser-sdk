@@ -65,41 +65,45 @@ class User {
     }
   }
 
-  append(key, value) {
-    this._call_indetity({
-      $append: {
-        [key]: value,
-      },
-    });
+  append(key = "", value) {
+    if (value != undefined) {
+      this._call_indetity({
+        $append: {
+          [String(key)]: value,
+        },
+      });
+    }
   }
 
   remove(key, value) {
+    if (value != undefined) {
+      this._call_indetity({
+        $remove: {
+          [String(key)]: value,
+        },
+      });
+    }
+  }
+
+  unset(key = "") {
     this._call_indetity({
-      $remove: {
-        [key]: value,
-      },
+      $unset: [String(key)],
     });
   }
 
-  unset(key) {
-    this._call_indetity({
-      $unset: [key],
-    });
-  }
-
-  addEmail(email) {
+  add_email(email = "") {
     this.append("email", email);
   }
 
-  removeEmail(email) {
+  remove_email(email = "") {
     this.remove("email", email);
   }
 
-  addSMS(mobile) {
+  add_sms(mobile = "") {
     this.append("sms", mobile);
   }
 
-  addWhatsApp(mobile) {
+  add_whatsapp(mobile = "") {
     this.append("whatsapp", mobile);
   }
 }
