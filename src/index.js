@@ -1,9 +1,27 @@
-import utils from "./utils";
+import utils, { timerID } from "./utils";
 import config from "./config";
 import User from "./user";
 import { constants } from "./constants";
 
 var suprSendInstance;
+
+window.addEventListener("load", () => {
+  if (timerID) {
+    clearTimeout(timerID);
+    setTimeout(() => {
+      utils.bulk_call_api(true);
+    }, 2000);
+  }
+});
+
+window.addEventListener("online", () => {
+  if (timerID) {
+    clearTimeout(timerID);
+    setTimeout(() => {
+      utils.bulk_call_api(true);
+    }, 2000);
+  }
+});
 
 class SuprSend {
   static setEnvProperties() {

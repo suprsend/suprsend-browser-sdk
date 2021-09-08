@@ -1,6 +1,7 @@
 // suprsend sdk related constants
 export const constants = {
   distinct_id: "_suprsend_dist_id",
+  bulk_events_key: "bulk_api_call",
 };
 
 export const browser_useragent_map = {
