@@ -1,9 +1,27 @@
-import utils from "./utils";
+import utils, { timerID } from "./utils";
 import config from "./config";
 import User from "./user";
 import { constants } from "./constants";
 
 var suprSendInstance;
+
+window.addEventListener("load", () => {
+  if (timerID) {
+    clearTimeout(timerID);
+    setTimeout(() => {
+      utils.bulk_call_api(true);
+    }, 2000);
+  }
+});
+
+window.addEventListener("online", () => {
+  if (timerID) {
+    clearTimeout(timerID);
+    setTimeout(() => {
+      utils.bulk_call_api(true);
+    }, 2000);
+  }
+});
 
 class SuprSend {
   static setEnvProperties() {
@@ -48,17 +66,18 @@ class SuprSend {
 
   track(event, props = {}) {
     if (event != undefined) {
+      const formatted_data = utils.format_props({
+        ...props,
+        ...suprSendInstance.env_properties,
+        current_url: window.location.href,
+        insert_id: utils.uuid(),
+        time: utils.epoch_seconds(),
+      });
       utils.call_api("event/", {
-        event: event,
+        event: String(event),
         distinct_id: suprSendInstance.distinct_id,
         env: suprSendInstance.ENV_API_KEY,
-        properties: {
-          ...props,
-          ...suprSendInstance.env_properties,
-          current_url: window.location.href,
-          insert_id: utils.uuid(),
-          time: utils.epoch_seconds(),
-        },
+        properties: formatted_data,
       });
     }
   }
