@@ -116,7 +116,7 @@ function bulk_call_api(handleCatch = false) {
   const items = get_bulk_events();
   if (items.length) {
     const batch = items.slice(0, 20);
-    api("identity/", batch)
+    api(constants.api_events_route, batch)
       .then((res) => {
         if (!res.ok) {
           throw new Error("Error in Fetch");
@@ -137,7 +137,7 @@ function bulk_call_api(handleCatch = false) {
   }
 }
 
-function call_api(route, body) {
+function call_api(body, route = constants.api_events_route) {
   api(route, body).catch(() => {
     let parsed_data = get_bulk_events();
     parsed_data?.push(body);

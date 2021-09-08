@@ -2,6 +2,7 @@
 export const constants = {
   distinct_id: "_suprsend_dist_id",
   bulk_events_key: "bulk_api_call",
+  api_events_route: "event/",
 };
 
 export const browser_useragent_map = {

@@ -50,7 +50,7 @@ class SuprSend {
 
   identify(unique_id) {
     if (!suprSendInstance._user_identified) {
-      utils.call_api("identity/", {
+      utils.call_api({
         env: suprSendInstance.ENV_API_KEY,
         event: "$identify",
         properties: {
@@ -73,7 +73,7 @@ class SuprSend {
         insert_id: utils.uuid(),
         time: utils.epoch_seconds(),
       });
-      utils.call_api("event/", {
+      utils.call_api({
         event: String(event),
         distinct_id: suprSendInstance.distinct_id,
         env: suprSendInstance.ENV_API_KEY,
