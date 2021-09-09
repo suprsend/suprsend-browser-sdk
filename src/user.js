@@ -1,13 +1,14 @@
 import utils from "./utils";
 
 class User {
-  constructor(instance) {
+  constructor(env_key, instance) {
+    this.env = env_key;
     this.instance = instance;
   }
 
   _call_indetity(properties) {
     utils.call_api({
-      env: this.instance.ENV_API_KEY,
+      env: this.env,
       distinct_id: this.instance.distinct_id,
       ...properties,
     });
@@ -69,19 +70,19 @@ class User {
   }
 
   add_email(email = "") {
-    this.append("email", email);
+    this.append("$email", email);
   }
 
   remove_email(email = "") {
-    this.remove("email", email);
+    this.remove("$email", email);
   }
 
   add_sms(mobile = "") {
-    this.append("sms", mobile);
+    this.append("$sms", mobile);
   }
 
   add_whatsapp(mobile = "") {
-    this.append("whatsapp", mobile);
+    this.append("$whatsapp", mobile);
   }
 }
 

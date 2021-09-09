@@ -21,8 +21,8 @@ function uuid() {
   return uuid;
 }
 
-function epoch_seconds() {
-  return Math.round(Date.now() / 1000);
+function epoch_milliseconds() {
+  return Math.round(Date.now());
 }
 
 function cookie_enabled() {
@@ -138,7 +138,7 @@ function bulk_call_api(handleCatch = false) {
 }
 
 function call_api(body, route = constants.api_events_route) {
-  api(route, body).catch(() => {
+  return api(route, body).catch(() => {
     let parsed_data = get_bulk_events();
     parsed_data?.push(body);
     set_local_storage_item(
@@ -181,7 +181,7 @@ function format_props(key, value) {
 
 export default {
   uuid,
-  epoch_seconds,
+  epoch_milliseconds,
   cookie_enabled,
   set_cookie,
   get_cookie,
