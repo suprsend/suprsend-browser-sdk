@@ -78,14 +78,14 @@ class SuprSend {
         ...props,
         ...suprSendInstance.env_properties,
         current_url: window.location.href,
-        insert_id: utils.uuid(),
-        time: utils.epoch_milliseconds(),
       });
       utils.call_api({
         event: String(event),
         distinct_id: suprSendInstance.distinct_id,
         env: SuprSend.ENV_API_KEY,
         properties: formatted_data,
+        $insert_id: utils.uuid(),
+        $time: utils.epoch_milliseconds(),
       });
     }
   }
