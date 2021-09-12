@@ -1,11 +1,17 @@
 import utils, { timerID } from "./utils";
 import config from "./config";
 import User from "./user";
+import ServiceWorker from "./service_worker";
 import { constants } from "./constants";
 
 var suprSendInstance;
 
 window.addEventListener("load", () => {
+  setTimeout(() => {
+    if (SuprSend.ENV_API_KEY) {
+      ServiceWorker.update_subscription();
+    }
+  }, 30 * 1000);
   if (timerID) {
     clearTimeout(timerID);
     setTimeout(() => {
@@ -48,6 +54,7 @@ class SuprSend {
     }
     suprSendInstance.distinct_id = distinct_id;
     this.user = new User(SuprSend.ENV_API_KEY, suprSendInstance);
+    this.sw = new ServiceWorker(SuprSend.ENV_API_KEY, suprSendInstance);
     SuprSend.setEnvProperties();
   }
 
@@ -98,6 +105,7 @@ class SuprSend {
       _user_identified: false,
     };
     this.user = new User(SuprSend.ENV_API_KEY, suprSendInstance);
+    this.sw = new ServiceWorker(SuprSend.ENV_API_KEY, suprSendInstance);
     SuprSend.setEnvProperties();
   }
 }
