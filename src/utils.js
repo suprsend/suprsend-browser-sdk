@@ -66,6 +66,16 @@ function set_local_storage_item(key, value) {
   localStorage.setItem(key, value);
 }
 
+function remove_local_storage_item(key) {
+  localStorage.removeItem(key);
+}
+
+function get_parsed_local_store_data(key, default_value = {}) {
+  let existing_data = get_local_storage_item(key);
+  existing_data = existing_data ? JSON.parse(existing_data) : default_value;
+  return existing_data;
+}
+
 function browser() {
   const userAgent = navigator.userAgent;
   for (let browser_item in browser_useragent_map) {
@@ -186,6 +196,11 @@ export default {
   set_cookie,
   get_cookie,
   remove_cookie,
+  local_storage_enabled,
+  get_local_storage_item,
+  set_local_storage_item,
+  remove_local_storage_item,
+  get_parsed_local_store_data,
   browser,
   browser_version,
   os,

@@ -51,6 +51,21 @@ class SuprSend {
     SuprSend.setEnvProperties();
   }
 
+  set_super_properties(props = {}) {
+    let existing_super_properties = utils.get_parsed_local_store_data(
+      constants.super_properties_key
+    );
+    let new_super_props = { ...existing_super_properties, ...props };
+    utils.set_local_storage_item(
+      constants.super_properties_key,
+      JSON.stringify(new_super_props)
+    );
+    suprSendInstance.env_properties = {
+      ...suprSendInstance.env_properties,
+      ...new_super_props,
+    };
+  }
+
   identify(unique_id) {
     if (!suprSendInstance._user_identified) {
       utils
@@ -74,10 +89,14 @@ class SuprSend {
 
   track(event, props = {}) {
     if (event != undefined) {
+      const super_props = utils.get_parsed_local_store_data(
+        constants.super_properties_key
+      );
       const formatted_data = utils.format_props({
         ...props,
         ...suprSendInstance.env_properties,
-        current_url: window.location.href,
+        ...super_props,
+        $current_url: window.location.href,
       });
       utils.call_api({
         event: String(event),
@@ -97,6 +116,7 @@ class SuprSend {
       distinct_id: distinct_id,
       _user_identified: false,
     };
+    utils.remove_local_storage_item(constants.super_properties_key);
     this.user = new User(SuprSend.ENV_API_KEY, suprSendInstance);
     SuprSend.setEnvProperties();
   }
