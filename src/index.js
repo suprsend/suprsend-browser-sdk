@@ -7,11 +7,6 @@ import { constants } from "./constants";
 var suprSendInstance;
 
 window.addEventListener("load", () => {
-  setTimeout(() => {
-    if (SuprSend.ENV_API_KEY) {
-      ServiceWorker.update_subscription();
-    }
-  }, 30 * 1000);
   if (timerID) {
     clearTimeout(timerID);
     setTimeout(() => {
@@ -61,6 +56,7 @@ class SuprSend {
     suprSendInstance.distinct_id = distinct_id;
     this.user = new User(SuprSend.ENV_API_KEY, suprSendInstance);
     this.sw = new ServiceWorker(SuprSend.ENV_API_KEY, suprSendInstance);
+    this.sw.update_subscription();
     SuprSend.setEnvProperties();
   }
 

@@ -1,10 +1,12 @@
 import utils from "./utils";
 import config from "./config";
+import User from "./user";
 
 class ServiceWorker {
   constructor(env_key, instance) {
     this.env = env_key;
     this.instance = instance;
+    this.user = new User(env_key, instance);
   }
 
   _check_push_support = () => {
@@ -33,7 +35,6 @@ class ServiceWorker {
       })
       .then(async (subscription) => {
         if (!subscription) {
-          console.log("No subscription");
           return;
         }
         return subscription;
@@ -56,23 +57,23 @@ class ServiceWorker {
           applicationServerKey,
           userVisibleOnly: true,
         });
-        console.log("API_CALL: save subscription", subscription);
+        this.user.add_webpush(subscription);
       } else {
         console.log("Push already subscribed");
       }
     }
   };
 
-  static async update_subscription() {
+  update_subscription() {
     navigator.serviceWorker.ready
       .then((registration) => {
         return registration.pushManager.getSubscription();
       })
-      .then(async (subscription) => {
+      .then((subscription) => {
         if (!subscription) {
-          console.log("No subscription");
           return;
         }
+        this.user.add_webpush(subscription);
         console.log("API_CALL: save subscription", subscription);
       });
   }
@@ -90,17 +91,17 @@ class ServiceWorker {
     return !!subscription;
   };
 
-  unsubscribe_push = () => {
-    navigator.serviceWorker.ready
-      .then((registration) => {
-        return registration.pushManager.getSubscription();
-      })
-      .then((subscription) => {
-        return subscription.unsubscribe().then(() => {
-          console.log("API_CALL: unsubscription");
-        });
-      });
-  };
+  // unsubscribe_push = () => {
+  //   navigator.serviceWorker.ready
+  //     .then((registration) => {
+  //       return registration.pushManager.getSubscription();
+  //     })
+  //     .then((subscription) => {
+  //       return subscription.unsubscribe().then(() => {
+  //         console.log("API_CALL: unsubscription");
+  //       });
+  //     });
+  // };
 }
 
 export default ServiceWorker;
