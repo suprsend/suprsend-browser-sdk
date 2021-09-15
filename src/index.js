@@ -27,11 +27,17 @@ class SuprSend {
   static ENV_API_KEY;
 
   static setEnvProperties() {
+    let device_id = utils.get_local_storage_item(constants.device_id_key);
+    if (!device_id) {
+      device_id = utils.uuid();
+      utils.set_local_storage_item(constants.device_id_key, device_id);
+    }
     suprSendInstance.env_properties = {
       $os: utils.os(),
       $browser: utils.browser(),
       $browser_version: utils.browser_version(),
       $sdk_type: "Browser",
+      $device_id: device_id,
       $sdk_version: config.sdk_version,
     };
   }

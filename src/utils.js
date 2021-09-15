@@ -55,19 +55,32 @@ function remove_cookie(name) {
 }
 
 function local_storage_enabled() {
-  return !!window.localStorage;
+  let enabled = true;
+  try {
+    !!window.localStorage;
+  } catch (err) {
+    enabled = false;
+  }
+  return enabled;
 }
 
 function get_local_storage_item(key) {
-  return localStorage.getItem(key);
+  if (local_storage_enabled()) {
+    return localStorage.getItem(key);
+  }
+  return;
 }
 
 function set_local_storage_item(key, value) {
-  localStorage.setItem(key, value);
+  if (local_storage_enabled()) {
+    localStorage.setItem(key, value);
+  }
 }
 
 function remove_local_storage_item(key) {
-  localStorage.removeItem(key);
+  if (local_storage_enabled()) {
+    localStorage.removeItem(key);
+  }
 }
 
 function get_parsed_local_store_data(key, default_value = {}) {
