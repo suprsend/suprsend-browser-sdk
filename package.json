@@ -1,11 +1,12 @@
 {
-  "name": "suprsend-web-sdk",
-  "version": "0.1.0",
+  "name": "@suprsend/web-sdk",
+  "version": "0.1.4",
   "description": "This is sdk used to integrate suprsend functionality in javascript applications",
   "main": "dist/cjs_bundle.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rm -rf dist && webpack --env module_type=commonjs --env filename=cjs_bundle.js  && webpack --env module_type=window --env filename=cdn_bundle.js"
+    "build": "rm -rf dist && webpack --env module_type=commonjs --env filename=cjs_bundle.js  && webpack --env module_type=window --env filename=cdn_bundle.js",
+    "publish": "npm run build && npm publish"
   },
   "keywords": [
     "suprsend",
