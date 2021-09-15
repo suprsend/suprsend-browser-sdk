@@ -1,1 +1,668 @@
-!function(){"use strict";var e={d:function(r,n){for(var t in n)e.o(n,t)&&!e.o(r,t)&&Object.defineProperty(r,t,{enumerable:!0,get:n[t]})},o:function(e,r){return Object.prototype.hasOwnProperty.call(e,r)},r:function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})}},r={};e.r(r),e.d(r,{default:function(){return V}});var n="_suprsend_dist_id",t="bulk_api_call",i="event/",o={Edge:["Edge"],"Opera Mini":["Opera Mini"],"Opera Mobile":["Opera Mobi"],Opera:["Opera"],"Internet Explorer":["Trident","MSIE"],Chrome:["Chrome"],Firefox:["Firefox"],Safari:["Safari"],Mozilla:["Mozilla"]},a={Edge:/Edge\/([0-9]+(\.[0-9]+)?)/,"Opera Mini":/Opera Mini\/([0-9]+(\.[0-9]+)?)/,"Opera Mobile":/Version\/([0-9]+(\.[0-9]+)?)/,Opera:/Version\/([0-9]+(\.[0-9]+)?)/,"Internet Explorer":"rv:",Chrome:/Chrome\/([0-9]+(\.[0-9]+)?)/,Firefox:/rv:([0-9]+(\.[0-9]+)?)/,Safari:/Version\/([0-9]+(\.[0-9]+)?)/,Mozilla:/rv:([0-9]+(\.[0-9]+)?)/},u={"Chrome OS":"CrOS","Mac OS":"Macintosh",Windows:"Windows",iOS:"like Mac",Android:"Android",Linux:"Linux"};const c="https://collector.suprsend.workers.dev",s="1.0.0",l="suprsend_service_worker.js";function f(e,r){var n="undefined"!=typeof Symbol&&e[Symbol.iterator]||e["@@iterator"];if(!n){if(Array.isArray(e)||(n=function(e,r){if(e){if("string"==typeof e)return p(e,r);var n=Object.prototype.toString.call(e).slice(8,-1);return"Object"===n&&e.constructor&&(n=e.constructor.name),"Map"===n||"Set"===n?Array.from(e):"Arguments"===n||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)?p(e,r):void 0}}(e))||r&&e&&"number"==typeof e.length){n&&(e=n);var t=0,i=function(){};return{s:i,n:function(){return t>=e.length?{done:!0}:{done:!1,value:e[t++]}},e:function(e){throw e},f:i}}throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}var o,a=!0,u=!1;return{s:function(){n=n.call(e)},n:function(){var e=n.next();return a=e.done,e},e:function(e){u=!0,o=e},f:function(){try{a||null==n.return||n.return()}finally{if(u)throw o}}}}function p(e,r){(null==r||r>e.length)&&(r=e.length);for(var n=0,t=new Array(r);n<r;n++)t[n]=e[n];return t}var v;function d(e,r){localStorage.setItem(e,r)}function h(){var e=navigator.userAgent;for(var r in o){var n,t=f(o[r]);try{for(t.s();!(n=t.n()).done;){var i=n.value;if(e.indexOf(i)>=0)return r}}catch(e){t.e(e)}finally{t.f()}}}function b(){var e=(t,localStorage.getItem("bulk_api_call")||"[]");return JSON.parse(e)}function _(e,r){var n=arguments.length>2&&void 0!==arguments[2]?arguments[2]:"post";return fetch("".concat(c,"/").concat(e),{method:n,body:JSON.stringify(r),headers:{"Content-Type":"application/json"}})}function g(){var e=arguments.length>0&&void 0!==arguments[0]&&arguments[0],r=b();if(r.length){var n=r.slice(0,20);_(i,n).then((function(e){if(!e.ok)throw new Error("Error in Fetch");var r=b();r.splice(0,20),d(t,JSON.stringify(r)),g()})).catch((function(){e&&y()}))}}function y(){v||(v=setInterval((function(){b().length?g():clearInterval(v)}),12e4))}const m={uuid:function(){var e=(new Date).getTime();return"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,(function(r){var n=(e+16*Math.random())%16|0;return e=Math.floor(e/16),("x"==r?n:3&n|8).toString(16)}))},epoch_milliseconds:function(){return Math.round(Date.now())},cookie_enabled:function(){return navigator.cookieEnabled},set_cookie:function(e,r){var n=arguments.length>2&&void 0!==arguments[2]?arguments[2]:365,t="";if(n){var i=new Date;i.setTime(i.getTime()+24*n*60*60*1e3),t="; expires="+i.toUTCString()}document.cookie=e+"="+(r||"")+t+"; path=/"},get_cookie:function(e){for(var r=e+"=",n=document.cookie.split(";"),t=0;t<n.length;t++){for(var i=n[t];" "==i.charAt(0);)i=i.substring(1,i.length);if(0==i.indexOf(r))return i.substring(r.length,i.length)}return null},remove_cookie:function(e){document.cookie=e+"=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;"},browser:h,browser_version:function(){var e=navigator.userAgent,r=h(),n=a[r];if(n){var t=e.match(n);if(t&&t.length>1)return t[1]}},os:function(){var e=navigator.userAgent;for(var r in u)if(e.indexOf(u[r])>=0)return r},call_api:function(e){var r=arguments.length>1&&void 0!==arguments[1]?arguments[1]:i;return _(r,e).catch((function(){var r=b();null==r||r.push(e),d(t,JSON.stringify(r)),y()}))},bulk_call_api:g,format_props:function(e,r){var n;if(e instanceof Object){n={};for(var t=Object.keys(e),i=0;i<t.length;i++){var o=t[i];void 0!==e[o]&&(n[String(o)]=e[o])}}else null!=r&&(n=function(e,r,n){return r in e?Object.defineProperty(e,r,{value:n,enumerable:!0,configurable:!0,writable:!0}):e[r]=n,e}({},String(e),r));return n},urlB64ToUint8Array:function(e){for(var r=(e+"=".repeat((4-e.length%4)%4)).replace(/\-/g,"+").replace(/_/g,"/"),n=atob(r),t=new Uint8Array(n.length),i=0;i<n.length;++i)t[i]=n.charCodeAt(i);return t}};function w(e,r){var n=Object.keys(e);if(Object.getOwnPropertySymbols){var t=Object.getOwnPropertySymbols(e);r&&(t=t.filter((function(r){return Object.getOwnPropertyDescriptor(e,r).enumerable}))),n.push.apply(n,t)}return n}function O(e,r,n){return r in e?Object.defineProperty(e,r,{value:n,enumerable:!0,configurable:!0,writable:!0}):e[r]=n,e}function k(e,r){for(var n=0;n<r.length;n++){var t=r[n];t.enumerable=t.enumerable||!1,t.configurable=!0,"value"in t&&(t.writable=!0),Object.defineProperty(e,t.key,t)}}const x=function(){function e(r,n){!function(e,r){if(!(e instanceof r))throw new TypeError("Cannot call a class as a function")}(this,e),this.env=r,this.instance=n}var r,n;return r=e,(n=[{key:"_call_indetity",value:function(e){m.call_api(function(e){for(var r=1;r<arguments.length;r++){var n=null!=arguments[r]?arguments[r]:{};r%2?w(Object(n),!0).forEach((function(r){O(e,r,n[r])})):Object.getOwnPropertyDescriptors?Object.defineProperties(e,Object.getOwnPropertyDescriptors(n)):w(Object(n)).forEach((function(r){Object.defineProperty(e,r,Object.getOwnPropertyDescriptor(n,r))}))}return e}({env:this.env,distinct_id:this.instance.distinct_id},e))}},{key:"set",value:function(e,r){var n=m.format_props(e,r);n&&this._call_indetity({$set:n})}},{key:"set_once",value:function(e,r){var n=m.format_props(e,r);n&&this._call_indetity({$set_once:n})}},{key:"increment",value:function(e){var r=arguments.length>1&&void 0!==arguments[1]?arguments[1]:1,n=m.format_props(e,r);if(n){for(var t=Object.keys(n),i=0;i<t.length;i++){var o=t[i],a=Number(n[o]);a||delete n[o]}this._call_indetity({$add:n})}}},{key:"append",value:function(e,r){var n=m.format_props(e,r);n&&this._call_indetity({$append:n})}},{key:"remove",value:function(e,r){var n=m.format_props(e,r);n&&this._call_indetity({$remove:n})}},{key:"unset",value:function(e){var r;if("string"==typeof e)r=[String(e)];else{if(!(e instanceof Array))return;r=e.map((function(e){return String(e)}))}this._call_indetity({$unset:r})}},{key:"add_email",value:function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"";this.append("$email",e)}},{key:"remove_email",value:function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"";this.remove("$email",e)}},{key:"add_sms",value:function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"";this.append("$sms",e)}},{key:"add_whatsapp",value:function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"";this.append("$whatsapp",e)}}])&&k(r.prototype,n),e}();function P(e,r,n,t,i,o,a){try{var u=e[o](a),c=u.value}catch(e){return void n(e)}u.done?r(c):Promise.resolve(c).then(t,i)}function j(e){return function(){var r=this,n=arguments;return new Promise((function(t,i){var o=e.apply(r,n);function a(e){P(o,t,i,a,u,"next",e)}function u(e){P(o,t,i,a,u,"throw",e)}a(void 0)}))}}function E(e,r){for(var n=0;n<r.length;n++){var t=r[n];t.enumerable=t.enumerable||!1,t.configurable=!0,"value"in t&&(t.writable=!0),Object.defineProperty(e,t.key,t)}}function S(e,r,n){return r in e?Object.defineProperty(e,r,{value:n,enumerable:!0,configurable:!0,writable:!0}):e[r]=n,e}const A=function(){function e(r,n){var t=this;!function(e,r){if(!(e instanceof r))throw new TypeError("Cannot call a class as a function")}(this,e),S(this,"_check_push_support",(function(){return!(!("serviceWorker"in navigator)||!("PushManager"in window))})),S(this,"_ask_notification_permission",j(regeneratorRuntime.mark((function e(){return regeneratorRuntime.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return e.next=2,Notification.requestPermission();case 2:return e.abrupt("return",e.sent);case 3:case"end":return e.stop()}}),e)})))),S(this,"_register_sw",(function(){return navigator.serviceWorker.register("/".concat(l)).then((function(e){console.log("Service worker successfully registered."),t._subscribe_push(e)})).catch((function(e){console.error("Unable to register service worker.",e)}))})),S(this,"_get_subscription",(function(){return navigator.serviceWorker.ready.then((function(e){return e.pushManager.getSubscription()})).then(function(){var e=j(regeneratorRuntime.mark((function e(r){return regeneratorRuntime.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:if(r){e.next=3;break}return console.log("No subscription"),e.abrupt("return");case 3:return e.abrupt("return",r);case 4:case"end":return e.stop()}}),e)})));return function(r){return e.apply(this,arguments)}}())})),S(this,"_subscribe_push",function(){var e=j(regeneratorRuntime.mark((function e(r){var n,i;return regeneratorRuntime.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return e.next=2,t._ask_notification_permission();case 2:if("granted"!==e.sent){e.next=17;break}return e.next=6,t._get_subscription();case 6:if(e.sent){e.next=16;break}return console.log("API_CALL: get public vapid from server"),n=m.urlB64ToUint8Array("BADMgGsRZWdjJPH34F0v9OTQfrxHArhk_sVawIACOFHTcaPF_Cfpq1uBX6lOwHByQDjt8f05h3ESK3dldpG3Q9Q"),e.next=12,r.pushManager.subscribe({applicationServerKey:n,userVisibleOnly:!0});case 12:i=e.sent,console.log("API_CALL: save subscription",i),e.next=17;break;case 16:console.log("Push already subscribed");case 17:case"end":return e.stop()}}),e)})));return function(r){return e.apply(this,arguments)}}()),S(this,"register_push",(function(){t._check_push_support()?t._register_sw():console.log("OOPS, Web Push isn't supported")})),S(this,"is_subscribed",j(regeneratorRuntime.mark((function e(){var r;return regeneratorRuntime.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return e.next=2,t._get_subscription();case 2:return r=e.sent,e.abrupt("return",!!r);case 4:case"end":return e.stop()}}),e)})))),S(this,"unsubscribe_push",(function(){navigator.serviceWorker.ready.then((function(e){return e.pushManager.getSubscription()})).then((function(e){return e.unsubscribe().then((function(){console.log("API_CALL: unsubscription")}))}))})),this.env=r,this.instance=n}var r,n,t;return r=e,null,(n=[{key:"update_subscription",value:(t=j(regeneratorRuntime.mark((function e(){return regeneratorRuntime.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:navigator.serviceWorker.ready.then((function(e){return e.pushManager.getSubscription()})).then(function(){var e=j(regeneratorRuntime.mark((function e(r){return regeneratorRuntime.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:if(r){e.next=3;break}return console.log("No subscription"),e.abrupt("return");case 3:console.log("API_CALL: save subscription",r);case 4:case"end":return e.stop()}}),e)})));return function(r){return e.apply(this,arguments)}}());case 1:case"end":return e.stop()}}),e)}))),function(){return t.apply(this,arguments)})}])&&E(r,n),e}();function M(e,r){var n=Object.keys(e);if(Object.getOwnPropertySymbols){var t=Object.getOwnPropertySymbols(e);r&&(t=t.filter((function(r){return Object.getOwnPropertyDescriptor(e,r).enumerable}))),n.push.apply(n,t)}return n}function I(e){for(var r=1;r<arguments.length;r++){var n=null!=arguments[r]?arguments[r]:{};r%2?M(Object(n),!0).forEach((function(r){$(e,r,n[r])})):Object.getOwnPropertyDescriptors?Object.defineProperties(e,Object.getOwnPropertyDescriptors(n)):M(Object(n)).forEach((function(r){Object.defineProperty(e,r,Object.getOwnPropertyDescriptor(n,r))}))}return e}function T(e,r){for(var n=0;n<r.length;n++){var t=r[n];t.enumerable=t.enumerable||!1,t.configurable=!0,"value"in t&&(t.writable=!0),Object.defineProperty(e,t.key,t)}}function $(e,r,n){return r in e?Object.defineProperty(e,r,{value:n,enumerable:!0,configurable:!0,writable:!0}):e[r]=n,e}var C;window.addEventListener("load",(function(){setTimeout((function(){N.ENV_API_KEY&&A.update_subscription()}),3e4),v&&(clearTimeout(v),setTimeout((function(){m.bulk_call_api(!0)}),2e3))})),window.addEventListener("online",(function(){v&&(clearTimeout(v),setTimeout((function(){m.bulk_call_api(!0)}),2e3))}));var N=function(){function e(){!function(e,r){if(!(e instanceof r))throw new TypeError("Cannot call a class as a function")}(this,e)}var r,t,i;return r=e,i=[{key:"setEnvProperties",value:function(){C.env_properties={$os:m.os(),$browser:m.browser(),$browser_version:m.browser_version(),$sdk_type:"Browser",$sdk_version:s}}}],(t=[{key:"initialize",value:function(r){var t=m.get_cookie(n);C||(e.ENV_API_KEY=r,C={}),t||(t=m.uuid(),m.set_cookie(n,t)),C.distinct_id=t,this.user=new x(e.ENV_API_KEY,C),this.sw=new A(e.ENV_API_KEY,C),e.setEnvProperties()}},{key:"identify",value:function(r){C._user_identified||m.call_api({env:e.ENV_API_KEY,event:"$identify",properties:{$identified_id:r,$anon_id:C.distinct_id}}).then((function(e){e.ok&&(m.set_cookie(n,r),C.distinct_id=r,C._user_identified=!0)}))}},{key:"track",value:function(r){var n=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{};if(null!=r){var t=m.format_props(I(I(I({},n),C.env_properties),{},{current_url:window.location.href}));m.call_api({event:String(r),distinct_id:C.distinct_id,env:e.ENV_API_KEY,properties:t,$insert_id:m.uuid(),$time:m.epoch_milliseconds()})}}},{key:"reset",value:function(){var r=m.uuid();m.set_cookie(n,r),C={distinct_id:r,_user_identified:!1},this.user=new x(e.ENV_API_KEY,C),this.sw=new A(e.ENV_API_KEY,C),e.setEnvProperties()}}])&&T(r.prototype,t),i&&T(r,i),e}();$(N,"ENV_API_KEY",void 0);const V=new N;var D=exports;for(var R in r)D[R]=r[R];r.__esModule&&Object.defineProperty(D,"__esModule",{value:!0})}();
+!(function () {
+  "use strict";
+  var e = {
+      d: function (t, r) {
+        for (var n in r)
+          e.o(r, n) &&
+            !e.o(t, n) &&
+            Object.defineProperty(t, n, { enumerable: !0, get: r[n] });
+      },
+      o: function (e, t) {
+        return Object.prototype.hasOwnProperty.call(e, t);
+      },
+      r: function (e) {
+        "undefined" != typeof Symbol &&
+          Symbol.toStringTag &&
+          Object.defineProperty(e, Symbol.toStringTag, { value: "Module" }),
+          Object.defineProperty(e, "__esModule", { value: !0 });
+      },
+    },
+    t = {};
+  e.r(t),
+    e.d(t, {
+      default: function () {
+        return N;
+      },
+    });
+  var r = "_suprsend_dist_id",
+    n = "bulk_api_call",
+    i = "event/",
+    o = "_suprsend_super_props",
+    a = "_suprsend_device_id",
+    c = {
+      Edge: ["Edge"],
+      "Opera Mini": ["Opera Mini"],
+      "Opera Mobile": ["Opera Mobi"],
+      Opera: ["Opera"],
+      "Internet Explorer": ["Trident", "MSIE"],
+      Chrome: ["Chrome"],
+      Firefox: ["Firefox"],
+      Safari: ["Safari"],
+      Mozilla: ["Mozilla"],
+    },
+    l = {
+      Edge: /Edge\/([0-9]+(\.[0-9]+)?)/,
+      "Opera Mini": /Opera Mini\/([0-9]+(\.[0-9]+)?)/,
+      "Opera Mobile": /Version\/([0-9]+(\.[0-9]+)?)/,
+      Opera: /Version\/([0-9]+(\.[0-9]+)?)/,
+      "Internet Explorer": "rv:",
+      Chrome: /Chrome\/([0-9]+(\.[0-9]+)?)/,
+      Firefox: /rv:([0-9]+(\.[0-9]+)?)/,
+      Safari: /Version\/([0-9]+(\.[0-9]+)?)/,
+      Mozilla: /rv:([0-9]+(\.[0-9]+)?)/,
+    },
+    u = {
+      "Chrome OS": "CrOS",
+      "Mac OS": "Macintosh",
+      Windows: "Windows",
+      iOS: "like Mac",
+      Android: "Android",
+      Linux: "Linux",
+    };
+  const s = "https://hub.relayroad.com",
+    f = "1.0.0";
+  function d(e, t) {
+    var r =
+      ("undefined" != typeof Symbol && e[Symbol.iterator]) || e["@@iterator"];
+    if (!r) {
+      if (
+        Array.isArray(e) ||
+        (r = (function (e, t) {
+          if (e) {
+            if ("string" == typeof e) return v(e, t);
+            var r = Object.prototype.toString.call(e).slice(8, -1);
+            return (
+              "Object" === r && e.constructor && (r = e.constructor.name),
+              "Map" === r || "Set" === r
+                ? Array.from(e)
+                : "Arguments" === r ||
+                  /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r)
+                ? v(e, t)
+                : void 0
+            );
+          }
+        })(e)) ||
+        (t && e && "number" == typeof e.length)
+      ) {
+        r && (e = r);
+        var n = 0,
+          i = function () {};
+        return {
+          s: i,
+          n: function () {
+            return n >= e.length ? { done: !0 } : { done: !1, value: e[n++] };
+          },
+          e: function (e) {
+            throw e;
+          },
+          f: i,
+        };
+      }
+      throw new TypeError(
+        "Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."
+      );
+    }
+    var o,
+      a = !0,
+      c = !1;
+    return {
+      s: function () {
+        r = r.call(e);
+      },
+      n: function () {
+        var e = r.next();
+        return (a = e.done), e;
+      },
+      e: function (e) {
+        (c = !0), (o = e);
+      },
+      f: function () {
+        try {
+          a || null == r.return || r.return();
+        } finally {
+          if (c) throw o;
+        }
+      },
+    };
+  }
+  function v(e, t) {
+    (null == t || t > e.length) && (t = e.length);
+    for (var r = 0, n = new Array(t); r < t; r++) n[r] = e[r];
+    return n;
+  }
+  var p;
+  function _() {
+    var e = !0;
+    try {
+      window.localStorage;
+    } catch (t) {
+      e = !1;
+    }
+    return e;
+  }
+  function g(e) {
+    if (_()) return localStorage.getItem(e);
+  }
+  function y(e, t) {
+    _() && localStorage.setItem(e, t);
+  }
+  function h() {
+    var e = navigator.userAgent;
+    for (var t in c) {
+      var r,
+        n = d(c[t]);
+      try {
+        for (n.s(); !(r = n.n()).done; ) {
+          var i = r.value;
+          if (e.indexOf(i) >= 0) return t;
+        }
+      } catch (e) {
+        n.e(e);
+      } finally {
+        n.f();
+      }
+    }
+  }
+  function b() {
+    var e = g(n) || "[]";
+    return JSON.parse(e);
+  }
+  function m(e, t) {
+    var r =
+      arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : "post";
+    return fetch("".concat(s, "/").concat(e), {
+      method: r,
+      body: JSON.stringify(t),
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+  function O() {
+    var e = arguments.length > 0 && void 0 !== arguments[0] && arguments[0],
+      t = b();
+    if (t.length) {
+      var r = t.slice(0, 20);
+      m(i, r)
+        .then(function (e) {
+          if (!e.ok) throw new Error("Error in Fetch");
+          var t = b();
+          t.splice(0, 20), y(n, JSON.stringify(t)), O();
+        })
+        .catch(function () {
+          e && w();
+        });
+    }
+  }
+  function w() {
+    p ||
+      (p = setInterval(function () {
+        b().length ? O() : clearInterval(p);
+      }, 12e4));
+  }
+  const x = {
+    uuid: function () {
+      var e = new Date().getTime();
+      return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+        /[xy]/g,
+        function (t) {
+          var r = (e + 16 * Math.random()) % 16 | 0;
+          return (
+            (e = Math.floor(e / 16)), ("x" == t ? r : (3 & r) | 8).toString(16)
+          );
+        }
+      );
+    },
+    epoch_milliseconds: function () {
+      return Math.round(Date.now());
+    },
+    cookie_enabled: function () {
+      return navigator.cookieEnabled;
+    },
+    set_cookie: function (e, t) {
+      var r =
+          arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : 365,
+        n = "";
+      if (r) {
+        var i = new Date();
+        i.setTime(i.getTime() + 24 * r * 60 * 60 * 1e3),
+          (n = "; expires=" + i.toUTCString());
+      }
+      document.cookie = e + "=" + (t || "") + n + "; path=/";
+    },
+    get_cookie: function (e) {
+      for (
+        var t = e + "=", r = document.cookie.split(";"), n = 0;
+        n < r.length;
+        n++
+      ) {
+        for (var i = r[n]; " " == i.charAt(0); ) i = i.substring(1, i.length);
+        if (0 == i.indexOf(t)) return i.substring(t.length, i.length);
+      }
+      return null;
+    },
+    remove_cookie: function (e) {
+      document.cookie = e + "=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+    },
+    local_storage_enabled: _,
+    get_local_storage_item: g,
+    set_local_storage_item: y,
+    remove_local_storage_item: function (e) {
+      _() && localStorage.removeItem(e);
+    },
+    get_parsed_local_store_data: function (e) {
+      var t =
+          arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {},
+        r = g(e);
+      return r ? JSON.parse(r) : t;
+    },
+    browser: h,
+    browser_version: function () {
+      var e = navigator.userAgent,
+        t = h(),
+        r = l[t];
+      if (r) {
+        var n = e.match(r);
+        if (n && n.length > 1) return n[1];
+      }
+    },
+    os: function () {
+      var e = navigator.userAgent;
+      for (var t in u) if (e.indexOf(u[t]) >= 0) return t;
+    },
+    call_api: function (e) {
+      var t =
+        arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : i;
+      return m(t, e).catch(function () {
+        var t = b();
+        null == t || t.push(e), y(n, JSON.stringify(t)), w();
+      });
+    },
+    bulk_call_api: O,
+    format_props: function (e, t) {
+      var r;
+      if (e instanceof Object) {
+        r = {};
+        for (var n = Object.keys(e), i = 0; i < n.length; i++) {
+          var o = n[i];
+          void 0 !== e[o] && (r[String(o)] = e[o]);
+        }
+      } else
+        null != t &&
+          (r = (function (e, t, r) {
+            return (
+              t in e
+                ? Object.defineProperty(e, t, {
+                    value: r,
+                    enumerable: !0,
+                    configurable: !0,
+                    writable: !0,
+                  })
+                : (e[t] = r),
+              e
+            );
+          })({}, String(e), t));
+      return r;
+    },
+  };
+  function k(e, t) {
+    var r = Object.keys(e);
+    if (Object.getOwnPropertySymbols) {
+      var n = Object.getOwnPropertySymbols(e);
+      t &&
+        (n = n.filter(function (t) {
+          return Object.getOwnPropertyDescriptor(e, t).enumerable;
+        })),
+        r.push.apply(r, n);
+    }
+    return r;
+  }
+  function j(e, t, r) {
+    return (
+      t in e
+        ? Object.defineProperty(e, t, {
+            value: r,
+            enumerable: !0,
+            configurable: !0,
+            writable: !0,
+          })
+        : (e[t] = r),
+      e
+    );
+  }
+  function S(e, t) {
+    for (var r = 0; r < t.length; r++) {
+      var n = t[r];
+      (n.enumerable = n.enumerable || !1),
+        (n.configurable = !0),
+        "value" in n && (n.writable = !0),
+        Object.defineProperty(e, n.key, n);
+    }
+  }
+  const P = (function () {
+    function e(t, r) {
+      !(function (e, t) {
+        if (!(e instanceof t))
+          throw new TypeError("Cannot call a class as a function");
+      })(this, e),
+        (this.env = t),
+        (this.instance = r);
+    }
+    var t, r;
+    return (
+      (t = e),
+      (r = [
+        {
+          key: "_call_indetity",
+          value: function (e) {
+            x.call_api(
+              (function (e) {
+                for (var t = 1; t < arguments.length; t++) {
+                  var r = null != arguments[t] ? arguments[t] : {};
+                  t % 2
+                    ? k(Object(r), !0).forEach(function (t) {
+                        j(e, t, r[t]);
+                      })
+                    : Object.getOwnPropertyDescriptors
+                    ? Object.defineProperties(
+                        e,
+                        Object.getOwnPropertyDescriptors(r)
+                      )
+                    : k(Object(r)).forEach(function (t) {
+                        Object.defineProperty(
+                          e,
+                          t,
+                          Object.getOwnPropertyDescriptor(r, t)
+                        );
+                      });
+                }
+                return e;
+              })({ env: this.env, distinct_id: this.instance.distinct_id }, e)
+            );
+          },
+        },
+        {
+          key: "set",
+          value: function (e, t) {
+            var r = x.format_props(e, t);
+            r && this._call_indetity({ $set: r });
+          },
+        },
+        {
+          key: "set_once",
+          value: function (e, t) {
+            var r = x.format_props(e, t);
+            r && this._call_indetity({ $set_once: r });
+          },
+        },
+        {
+          key: "increment",
+          value: function (e) {
+            var t =
+                arguments.length > 1 && void 0 !== arguments[1]
+                  ? arguments[1]
+                  : 1,
+              r = x.format_props(e, t);
+            if (r) {
+              for (var n = Object.keys(r), i = 0; i < n.length; i++) {
+                var o = n[i],
+                  a = Number(r[o]);
+                a || delete r[o];
+              }
+              this._call_indetity({ $add: r });
+            }
+          },
+        },
+        {
+          key: "append",
+          value: function (e, t) {
+            var r = x.format_props(e, t);
+            r && this._call_indetity({ $append: r });
+          },
+        },
+        {
+          key: "remove",
+          value: function (e, t) {
+            var r = x.format_props(e, t);
+            r && this._call_indetity({ $remove: r });
+          },
+        },
+        {
+          key: "unset",
+          value: function (e) {
+            var t;
+            if ("string" == typeof e) t = [String(e)];
+            else {
+              if (!(e instanceof Array)) return;
+              t = e.map(function (e) {
+                return String(e);
+              });
+            }
+            this._call_indetity({ $unset: t });
+          },
+        },
+        {
+          key: "add_email",
+          value: function () {
+            var e =
+              arguments.length > 0 && void 0 !== arguments[0]
+                ? arguments[0]
+                : "";
+            this.append("$email", e);
+          },
+        },
+        {
+          key: "remove_email",
+          value: function () {
+            var e =
+              arguments.length > 0 && void 0 !== arguments[0]
+                ? arguments[0]
+                : "";
+            this.remove("$email", e);
+          },
+        },
+        {
+          key: "add_sms",
+          value: function () {
+            var e =
+              arguments.length > 0 && void 0 !== arguments[0]
+                ? arguments[0]
+                : "";
+            this.append("$sms", e);
+          },
+        },
+        {
+          key: "add_whatsapp",
+          value: function () {
+            var e =
+              arguments.length > 0 && void 0 !== arguments[0]
+                ? arguments[0]
+                : "";
+            this.append("$whatsapp", e);
+          },
+        },
+      ]) && S(t.prototype, r),
+      e
+    );
+  })();
+  function E(e, t) {
+    var r = Object.keys(e);
+    if (Object.getOwnPropertySymbols) {
+      var n = Object.getOwnPropertySymbols(e);
+      t &&
+        (n = n.filter(function (t) {
+          return Object.getOwnPropertyDescriptor(e, t).enumerable;
+        })),
+        r.push.apply(r, n);
+    }
+    return r;
+  }
+  function M(e) {
+    for (var t = 1; t < arguments.length; t++) {
+      var r = null != arguments[t] ? arguments[t] : {};
+      t % 2
+        ? E(Object(r), !0).forEach(function (t) {
+            A(e, t, r[t]);
+          })
+        : Object.getOwnPropertyDescriptors
+        ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(r))
+        : E(Object(r)).forEach(function (t) {
+            Object.defineProperty(e, t, Object.getOwnPropertyDescriptor(r, t));
+          });
+    }
+    return e;
+  }
+  function $(e, t) {
+    for (var r = 0; r < t.length; r++) {
+      var n = t[r];
+      (n.enumerable = n.enumerable || !1),
+        (n.configurable = !0),
+        "value" in n && (n.writable = !0),
+        Object.defineProperty(e, n.key, n);
+    }
+  }
+  function A(e, t, r) {
+    return (
+      t in e
+        ? Object.defineProperty(e, t, {
+            value: r,
+            enumerable: !0,
+            configurable: !0,
+            writable: !0,
+          })
+        : (e[t] = r),
+      e
+    );
+  }
+  var I;
+  window.addEventListener("load", function () {
+    p &&
+      (clearTimeout(p),
+      setTimeout(function () {
+        x.bulk_call_api(!0);
+      }, 2e3));
+  }),
+    window.addEventListener("online", function () {
+      p &&
+        (clearTimeout(p),
+        setTimeout(function () {
+          x.bulk_call_api(!0);
+        }, 2e3));
+    });
+  var T = (function () {
+    function e() {
+      !(function (e, t) {
+        if (!(e instanceof t))
+          throw new TypeError("Cannot call a class as a function");
+      })(this, e);
+    }
+    var t, n, i;
+    return (
+      (t = e),
+      (i = [
+        {
+          key: "setEnvProperties",
+          value: function () {
+            var e = x.get_local_storage_item(a);
+            e || ((e = x.uuid()), x.set_local_storage_item(a, e)),
+              (I.env_properties = {
+                $os: x.os(),
+                $browser: x.browser(),
+                $browser_version: x.browser_version(),
+                $sdk_type: "Browser",
+                $device_id: e,
+                $sdk_version: f,
+              });
+          },
+        },
+      ]),
+      (n = [
+        {
+          key: "initialize",
+          value: function (t) {
+            var n = x.get_cookie(r);
+            I || ((e.ENV_API_KEY = t), (I = {})),
+              n || ((n = x.uuid()), x.set_cookie(r, n)),
+              (I.distinct_id = n),
+              (this.user = new P(e.ENV_API_KEY, I)),
+              e.setEnvProperties();
+          },
+        },
+        {
+          key: "set_super_properties",
+          value: function () {
+            var e =
+                arguments.length > 0 && void 0 !== arguments[0]
+                  ? arguments[0]
+                  : {},
+              t = x.get_parsed_local_store_data(o),
+              r = M(M({}, t), e);
+            x.set_local_storage_item(o, JSON.stringify(r)),
+              (I.env_properties = M(M({}, I.env_properties), r));
+          },
+        },
+        {
+          key: "identify",
+          value: function (t) {
+            I._user_identified ||
+              x
+                .call_api({
+                  env: e.ENV_API_KEY,
+                  event: "$identify",
+                  properties: { $identified_id: t, $anon_id: I.distinct_id },
+                })
+                .then(function (e) {
+                  e.ok &&
+                    (x.set_cookie(r, t),
+                    (I.distinct_id = t),
+                    (I._user_identified = !0));
+                });
+          },
+        },
+        {
+          key: "track",
+          value: function (t) {
+            var r =
+              arguments.length > 1 && void 0 !== arguments[1]
+                ? arguments[1]
+                : {};
+            if (null != t) {
+              var n = x.get_parsed_local_store_data(o),
+                i = x.format_props(
+                  M(
+                    M(M(M({}, r), I.env_properties), n),
+                    {},
+                    { $current_url: window.location.href }
+                  )
+                );
+              x.call_api({
+                event: String(t),
+                distinct_id: I.distinct_id,
+                env: e.ENV_API_KEY,
+                properties: i,
+                $insert_id: x.uuid(),
+                $time: x.epoch_milliseconds(),
+              });
+            }
+          },
+        },
+        {
+          key: "reset",
+          value: function () {
+            var t = x.uuid();
+            x.set_cookie(r, t),
+              (I = { distinct_id: t, _user_identified: !1 }),
+              x.remove_local_storage_item(o),
+              (this.user = new P(e.ENV_API_KEY, I)),
+              e.setEnvProperties();
+          },
+        },
+      ]) && $(t.prototype, n),
+      i && $(t, i),
+      e
+    );
+  })();
+  A(T, "ENV_API_KEY", void 0);
+  const N = new T();
+  var C = exports;
+  for (var D in t) C[D] = t[D];
+  t.__esModule && Object.defineProperty(C, "__esModule", { value: !0 });
+})();
