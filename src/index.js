@@ -37,7 +37,7 @@ class SuprSend {
     suprSendInstance.distinct_id = distinct_id;
     this.user = new User(SuprSend.ENV_API_KEY, suprSendInstance);
     SuprSend.setEnvProperties();
-    utils.bulk_call_api();
+    utils.schedule_flush();
   }
 
   set_super_properties(props = {}) {

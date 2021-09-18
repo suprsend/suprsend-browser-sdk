@@ -128,6 +128,12 @@ function api(route, body, method = "post") {
   });
 }
 
+/* 
+1. get data from local storage
+2. if data is present create first batch data and call api else schedule next flush
+3. if the above api call is success call next api call with next set of data if it exists
+4. If there is any error in api call then schedule flush after 2min
+*/
 function bulk_call_api() {
   const items = get_parsed_local_store_data(constants.bulk_events_key, []);
   if (items.length) {
@@ -146,19 +152,26 @@ function bulk_call_api() {
         bulk_call_api();
       })
       .catch(() => {
-        scheduleFlush(2 * 60 * 1000);
+        schedule_flush(2 * 60 * 1000);
       });
   } else {
-    scheduleFlush();
+    schedule_flush();
   }
 }
 
-function scheduleFlush(delay = 5000) {
+/* 
+ schedule the flush in some time future
+ */
+function schedule_flush(delay = 5000) {
   timerID = setTimeout(() => {
     bulk_call_api();
   }, delay);
 }
 
+/* 
+local storage enabled => add it to local storage which will be picked by continuous flusher
+local storage disabled => call the api directly
+*/
 function batch_or_call(body) {
   if (local_storage_enabled()) {
     let parsed_data = get_parsed_local_store_data(
@@ -207,7 +220,7 @@ export default {
   browser,
   browser_version,
   os,
-  bulk_call_api,
+  schedule_flush,
   format_props,
   batch_or_call,
 };
