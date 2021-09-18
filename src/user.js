@@ -7,7 +7,7 @@ class User {
   }
 
   _call_indetity(properties) {
-    utils.call_api({
+    utils.batch_or_call({
       env: this.env,
       distinct_id: this.instance.distinct_id,
       ...properties,

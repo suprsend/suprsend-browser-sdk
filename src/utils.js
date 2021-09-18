@@ -6,7 +6,7 @@ import {
 } from "./constants";
 import config from "./config";
 
-export let timerID;
+let timerID;
 
 function uuid() {
   var dt = new Date().getTime();
@@ -68,7 +68,6 @@ function get_local_storage_item(key) {
   if (local_storage_enabled()) {
     return localStorage.getItem(key);
   }
-  return;
 }
 
 function set_local_storage_item(key, value) {
@@ -121,12 +120,6 @@ function os() {
   }
 }
 
-function get_bulk_events() {
-  let data = get_local_storage_item(constants.bulk_events_key) || "[]";
-  data = JSON.parse(data);
-  return data;
-}
-
 function api(route, body, method = "post") {
   return fetch(`${config.api_url}/${route}`, {
     method: method,
@@ -135,17 +128,17 @@ function api(route, body, method = "post") {
   });
 }
 
-function bulk_call_api(handleCatch = false) {
-  const items = get_bulk_events();
+function bulk_call_api() {
+  const items = get_parsed_local_store_data(constants.bulk_events_key, []);
   if (items.length) {
-    const batch = items.slice(0, 20);
+    const batch = items.slice(0, config.batch_size);
     api(constants.api_events_route, batch)
       .then((res) => {
         if (!res.ok) {
           throw new Error("Error in Fetch");
         }
-        let items = get_bulk_events();
-        items.splice(0, 20);
+        let items = get_parsed_local_store_data(constants.bulk_events_key, []);
+        items.splice(0, config.batch_size);
         set_local_storage_item(
           constants.bulk_events_key,
           JSON.stringify(items)
@@ -153,35 +146,32 @@ function bulk_call_api(handleCatch = false) {
         bulk_call_api();
       })
       .catch(() => {
-        if (handleCatch) {
-          handle_event_timer();
-        }
+        scheduleFlush(2 * 60 * 1000);
       });
+  } else {
+    scheduleFlush();
   }
 }
 
-function call_api(body, route = constants.api_events_route) {
-  return api(route, body).catch(() => {
-    let parsed_data = get_bulk_events();
+function scheduleFlush(delay = 5000) {
+  timerID = setTimeout(() => {
+    bulk_call_api();
+  }, delay);
+}
+
+function batch_or_call(body) {
+  if (local_storage_enabled()) {
+    let parsed_data = get_parsed_local_store_data(
+      constants.bulk_events_key,
+      []
+    );
     parsed_data?.push(body);
     set_local_storage_item(
       constants.bulk_events_key,
       JSON.stringify(parsed_data)
     );
-    handle_event_timer();
-  });
-}
-
-function handle_event_timer() {
-  if (!timerID) {
-    timerID = setInterval(() => {
-      const items = get_bulk_events();
-      if (items.length) {
-        bulk_call_api();
-      } else {
-        clearInterval(timerID);
-      }
-    }, 2 * 60 * 1000);
+  } else {
+    api(constants.api_events_route, body);
   }
 }
 
@@ -217,7 +207,7 @@ export default {
   browser,
   browser_version,
   os,
-  call_api,
   bulk_call_api,
   format_props,
+  batch_or_call,
 };
