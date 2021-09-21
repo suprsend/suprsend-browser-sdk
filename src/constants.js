@@ -1,7 +1,7 @@
 // suprsend sdk related constants
 export const constants = {
   distinct_id: "_suprsend_dist_id",
-  bulk_events_key: "bulk_api_call",
+  bulk_events_key: "_bulk_api_call",
   api_events_route: "event/",
   super_properties_key: "_suprsend_super_props",
   device_id_key: "_suprsend_device_id",

@@ -1,27 +1,9 @@
-import utils, { timerID } from "./utils";
+import utils from "./utils";
 import config from "./config";
 import User from "./user";
 import { constants } from "./constants";
 
 var suprSendInstance;
-
-window.addEventListener("load", () => {
-  if (timerID) {
-    clearTimeout(timerID);
-    setTimeout(() => {
-      utils.bulk_call_api(true);
-    }, 2000);
-  }
-});
-
-window.addEventListener("online", () => {
-  if (timerID) {
-    clearTimeout(timerID);
-    setTimeout(() => {
-      utils.bulk_call_api(true);
-    }, 2000);
-  }
-});
 
 class SuprSend {
   static ENV_API_KEY;
@@ -55,6 +37,7 @@ class SuprSend {
     suprSendInstance.distinct_id = distinct_id;
     this.user = new User(SuprSend.ENV_API_KEY, suprSendInstance);
     SuprSend.setEnvProperties();
+    utils.schedule_flush();
   }
 
   set_super_properties(props = {}) {
@@ -74,22 +57,17 @@ class SuprSend {
 
   identify(unique_id) {
     if (!suprSendInstance._user_identified) {
-      utils
-        .call_api({
-          env: SuprSend.ENV_API_KEY,
-          event: "$identify",
-          properties: {
-            $identified_id: unique_id,
-            $anon_id: suprSendInstance.distinct_id,
-          },
-        })
-        .then((res) => {
-          if (res.ok) {
-            utils.set_cookie(constants.distinct_id, unique_id);
-            suprSendInstance.distinct_id = unique_id;
-            suprSendInstance._user_identified = true;
-          }
-        });
+      utils.batch_or_call({
+        env: SuprSend.ENV_API_KEY,
+        event: "$identify",
+        properties: {
+          $identified_id: unique_id,
+          $anon_id: suprSendInstance.distinct_id,
+        },
+      });
+      utils.set_cookie(constants.distinct_id, unique_id);
+      suprSendInstance.distinct_id = unique_id;
+      suprSendInstance._user_identified = true;
     }
   }
 
@@ -104,7 +82,7 @@ class SuprSend {
         ...super_props,
         $current_url: window.location.href,
       });
-      utils.call_api({
+      utils.batch_or_call({
         event: String(event),
         distinct_id: suprSendInstance.distinct_id,
         env: SuprSend.ENV_API_KEY,
