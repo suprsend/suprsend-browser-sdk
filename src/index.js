@@ -5,6 +5,7 @@ import ServiceWorker from "./service_worker";
 import { constants } from "./constants";
 
 var suprSendInstance;
+export var init_at;
 
 class SuprSend {
   static ENV_API_KEY;
@@ -26,6 +27,7 @@ class SuprSend {
   }
 
   initialize(ENV_API_KEY) {
+    init_at = new Date();
     var distinct_id = utils.get_cookie(constants.distinct_id);
     if (!suprSendInstance) {
       SuprSend.ENV_API_KEY = ENV_API_KEY;

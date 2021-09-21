@@ -1,7 +1,9 @@
 import utils from "./utils";
 import config from "./config";
 import User from "./user";
+import { init_at } from "./index";
 
+var notification_timer;
 class ServiceWorker {
   constructor(env_key, instance) {
     this.env = env_key;
@@ -40,6 +42,21 @@ class ServiceWorker {
         return subscription;
       });
   };
+
+  // this method make sure there is a given delay, as calling notification permission just after load is not good UX practice
+  _subscribe_with_delay() {
+    const now = new Date();
+    const delay = now - init_at;
+    const has_delay = delay >= config.sw_delay;
+    if (has_delay) {
+      this._subscribe_push();
+    } else {
+      clearTimeout(notification_timer);
+      notification_timer = setTimeout(() => {
+        this._subscribe_push();
+      }, config.sw_delay - delay);
+    }
+  }
 
   // 1. ask permission.
   // 2. if permission is granted then check if its already subscribed.
@@ -80,7 +97,7 @@ class ServiceWorker {
 
   register_push = () => {
     if (this._check_push_support()) {
-      this._register_sw();
+      this._subscribe_with_delay();
     } else {
       console.log("OOPS, Web Push isn't supported");
     }
