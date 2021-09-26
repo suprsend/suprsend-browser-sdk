@@ -82,7 +82,7 @@ class ServiceWorker {
   };
 
   update_subscription() {
-    navigator.serviceWorker.ready
+    navigator?.serviceWorker?.ready
       .then((registration) => {
         return registration.pushManager.getSubscription();
       })
