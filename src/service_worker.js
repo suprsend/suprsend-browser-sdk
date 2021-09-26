@@ -49,11 +49,11 @@ class ServiceWorker {
     const delay = now - init_at;
     const has_delay = delay >= config.sw_delay;
     if (has_delay) {
-      this._subscribe_push();
+      this._register_sw();
     } else {
       clearTimeout(notification_timer);
       notification_timer = setTimeout(() => {
-        this._subscribe_push();
+        this._register_sw();
       }, config.sw_delay - delay);
     }
   }
