@@ -87,7 +87,7 @@ class User {
 
   add_webpush(push = "") {
     this.append({
-      $webpush: JSON.stringify(push),
+      $webpush: push,
       $device_id: this.instance?.env_properties?.$device_id,
     });
   }
