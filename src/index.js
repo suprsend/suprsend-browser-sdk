@@ -9,6 +9,7 @@ export var init_at;
 
 class SuprSend {
   static ENV_API_KEY;
+  static OPTIONAL_KEYS;
 
   static setEnvProperties() {
     let device_id = utils.get_local_storage_item(constants.device_id_key);
@@ -26,11 +27,12 @@ class SuprSend {
     };
   }
 
-  initialize(ENV_API_KEY) {
+  initialize(ENV_API_KEY, options = {}) {
     init_at = new Date();
     var distinct_id = utils.get_cookie(constants.distinct_id);
     if (!suprSendInstance) {
       SuprSend.ENV_API_KEY = ENV_API_KEY;
+      SuprSend.OPTIONAL_KEYS = options;
       suprSendInstance = {};
     }
     if (!distinct_id) {
@@ -39,7 +41,11 @@ class SuprSend {
     }
     suprSendInstance.distinct_id = distinct_id;
     this.user = new User(SuprSend.ENV_API_KEY, suprSendInstance);
-    this.sw = new ServiceWorker(SuprSend.ENV_API_KEY, suprSendInstance);
+    this.sw = new ServiceWorker(
+      SuprSend.ENV_API_KEY,
+      suprSendInstance,
+      SuprSend.OPTIONAL_KEYS
+    );
     this.sw.update_subscription();
     SuprSend.setEnvProperties();
     utils.schedule_flush();
