@@ -27,7 +27,7 @@ class SuprSend {
     };
   }
 
-  initialize(ENV_API_KEY, options = {}) {
+  init(ENV_API_KEY, options = {}) {
     init_at = new Date();
     var distinct_id = utils.get_cookie(constants.distinct_id);
     if (!suprSendInstance) {
