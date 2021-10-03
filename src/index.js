@@ -11,6 +11,16 @@ class SuprSend {
   static ENV_API_KEY;
   static OPTIONAL_KEYS;
 
+  setCustomConfigProperty(key, value = "") {
+    if (value) {
+      config[key] = value;
+    }
+  }
+
+  setCustomConfig(options) {
+    this.setCustomConfigProperty("api_url", options?.api_url);
+  }
+
   static setEnvProperties() {
     let device_id = utils.get_local_storage_item(constants.device_id_key);
     if (!device_id) {
@@ -34,6 +44,7 @@ class SuprSend {
       SuprSend.ENV_API_KEY = ENV_API_KEY;
       SuprSend.OPTIONAL_KEYS = options;
       suprSendInstance = {};
+      this.setCustomConfig(options);
     }
     if (!distinct_id) {
       distinct_id = utils.uuid();
