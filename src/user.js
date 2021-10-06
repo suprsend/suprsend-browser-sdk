@@ -84,6 +84,13 @@ class User {
   add_whatsapp(mobile = "") {
     this.append("$whatsapp", mobile);
   }
+
+  add_webpush(push = "") {
+    this.append({
+      $webpush: push,
+      $device_id: this.instance?.env_properties?.$device_id,
+    });
+  }
 }
 
 export default User;
