@@ -124,7 +124,11 @@ class SuprSend {
     };
     utils.remove_local_storage_item(constants.super_properties_key);
     this.user = new User(SuprSend.ENV_API_KEY, suprSendInstance);
-    this.sw = new ServiceWorker(SuprSend.ENV_API_KEY, suprSendInstance);
+    this.sw = new ServiceWorker(
+      SuprSend.ENV_API_KEY,
+      suprSendInstance,
+      SuprSend.OPTIONAL_KEYS
+    );
     SuprSend.setEnvProperties();
   }
 }
