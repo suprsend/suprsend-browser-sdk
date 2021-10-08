@@ -122,7 +122,7 @@ function os() {
 async function api(route, body, method = "POST") {
   const requested_date = new Date().toGMTString();
   const req_body = JSON.stringify(body);
-  const sign = await create_signature(req_body, requested_date);
+  const sign = await create_signature(req_body, requested_date, "POST");
   const authorization = sign ? `${body[0]?.env}:${sign}` : body[0]?.env;
   return fetch(`${config.api_url}/${route}`, {
     method: method,
@@ -217,7 +217,7 @@ function urlB64ToUint8Array(base64String) {
   const base64 = (base64String + padding)
     .replace(/\-/g, "+")
     .replace(/_/g, "/");
-  const rawData = atob(base64);
+  const rawData = window.atob(base64);
   const outputArray = new Uint8Array(rawData.length);
   for (let i = 0; i < rawData.length; ++i) {
     outputArray[i] = rawData.charCodeAt(i);

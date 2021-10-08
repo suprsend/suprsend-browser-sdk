@@ -1,4 +1,5 @@
 import config from "./config";
+import { constants } from "./constants";
 
 var MD5 = function (string) {
   function RotateLeft(lValue, iShiftBits) {
@@ -235,16 +236,17 @@ const getUtf8Bytes = (str) =>
     [...unescape(encodeURIComponent(str))].map((c) => c.charCodeAt(0))
   );
 
-export default async function create_signature(str, date) {
+export default async function create_signature(str, date, method) {
   if (!window.crypto) {
     return;
   }
   const key = config.signing_key;
-  const enc_message = `POST\n${MD5(str)}\napplication/json\n${date}\n/event/`;
-  console.log("hmac string", enc_message);
+  const message = `${method}\n${MD5(str)}\napplication/json\n${date}\n/${
+    constants.api_events_route
+  }`;
 
   const keyBytes = getUtf8Bytes(key);
-  const messageBytes = getUtf8Bytes(enc_message);
+  const messageBytes = getUtf8Bytes(message);
 
   const cryptoKey = await crypto.subtle.importKey(
     "raw",

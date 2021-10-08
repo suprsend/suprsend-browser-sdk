@@ -8,17 +8,21 @@ var suprSendInstance;
 export var init_at;
 
 class SuprSend {
-  static ENV_API_KEY;
-  static OPTIONAL_KEYS;
-
-  setCustomConfigProperty(key, value = "") {
+  setCustomConfigProperty(key, value = "", mandatory = false) {
     if (value) {
       config[key] = value;
+    } else {
+      if (mandatory) {
+        throw Error("Mandatory Key Missing:", key);
+      }
     }
   }
 
-  setCustomConfig(options) {
-    this.setCustomConfigProperty("api_url", options?.api_url);
+  setCustomConfig(config_keys) {
+    this.setCustomConfigProperty("env_key", config_keys.env, true);
+    this.setCustomConfigProperty("signing_key", config_keys.signing_key, true);
+    this.setCustomConfigProperty("api_url", config_keys?.api_url);
+    this.setCustomConfigProperty("vapid_key", config_keys?.vapid_key);
   }
 
   static setEnvProperties() {
@@ -37,26 +41,22 @@ class SuprSend {
     };
   }
 
-  init(ENV_API_KEY, options = {}) {
+  init(ENV_API_KEY, SIGNING_KEY, config_keys = {}) {
+    config_keys.env = ENV_API_KEY;
+    config_keys.signing_key = SIGNING_KEY;
     init_at = new Date();
     var distinct_id = utils.get_cookie(constants.distinct_id);
     if (!suprSendInstance) {
-      SuprSend.ENV_API_KEY = ENV_API_KEY;
-      SuprSend.OPTIONAL_KEYS = options;
       suprSendInstance = {};
-      this.setCustomConfig(options);
+      this.setCustomConfig(config_keys);
     }
     if (!distinct_id) {
       distinct_id = utils.uuid();
       utils.set_cookie(constants.distinct_id, distinct_id);
     }
     suprSendInstance.distinct_id = distinct_id;
-    this.user = new User(SuprSend.ENV_API_KEY, suprSendInstance);
-    this.sw = new ServiceWorker(
-      SuprSend.ENV_API_KEY,
-      suprSendInstance,
-      SuprSend.OPTIONAL_KEYS
-    );
+    this.user = new User(suprSendInstance);
+    this.sw = new ServiceWorker(suprSendInstance);
     this.sw.update_subscription();
     SuprSend.setEnvProperties();
     utils.schedule_flush();
@@ -80,7 +80,7 @@ class SuprSend {
   identify(unique_id) {
     if (!suprSendInstance._user_identified) {
       utils.batch_or_call({
-        env: SuprSend.ENV_API_KEY,
+        env: config.env_key,
         event: "$identify",
         properties: {
           $identified_id: unique_id,
@@ -107,7 +107,7 @@ class SuprSend {
       utils.batch_or_call({
         event: String(event),
         distinct_id: suprSendInstance.distinct_id,
-        env: SuprSend.ENV_API_KEY,
+        env: config.env_key,
         properties: formatted_data,
         $insert_id: utils.uuid(),
         $time: utils.epoch_milliseconds(),
@@ -123,12 +123,8 @@ class SuprSend {
       _user_identified: false,
     };
     utils.remove_local_storage_item(constants.super_properties_key);
-    this.user = new User(SuprSend.ENV_API_KEY, suprSendInstance);
-    this.sw = new ServiceWorker(
-      SuprSend.ENV_API_KEY,
-      suprSendInstance,
-      SuprSend.OPTIONAL_KEYS
-    );
+    this.user = new User(suprSendInstance);
+    this.sw = new ServiceWorker(suprSendInstance);
     SuprSend.setEnvProperties();
   }
 }

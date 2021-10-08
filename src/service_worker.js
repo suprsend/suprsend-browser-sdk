@@ -5,11 +5,9 @@ import { init_at } from "./index";
 
 var notification_timer;
 class ServiceWorker {
-  constructor(env_key, instance, optional_keys) {
-    this.env = env_key;
+  constructor(instance) {
     this.instance = instance;
-    this.user = new User(env_key, instance);
-    this.vapid_key = optional_keys?.vapid_key;
+    this.user = new User(instance);
   }
 
   _check_push_support = () => {
@@ -67,12 +65,11 @@ class ServiceWorker {
     if (permission === "granted") {
       const subscription = await this._get_subscription();
       if (!subscription) {
-        console.log("API_CALL: get public vapid from server");
-        if (!this.vapid_key) {
+        if (!config.vapid_key) {
           console.log("Provide vapid key while calling init");
           return;
         }
-        const applicationServerKey = utils.urlB64ToUint8Array(this.vapid_key);
+        const applicationServerKey = utils.urlB64ToUint8Array(config.vapid_key);
         const subscription = await reg.pushManager.subscribe({
           applicationServerKey,
           userVisibleOnly: true,
@@ -94,7 +91,6 @@ class ServiceWorker {
           return;
         }
         this.user.add_webpush(subscription);
-        console.log("API_CALL: save subscription", subscription);
       });
   }
 

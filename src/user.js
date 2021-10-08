@@ -1,14 +1,14 @@
 import utils from "./utils";
+import config from "./config";
 
 class User {
-  constructor(env_key, instance) {
-    this.env = env_key;
+  constructor(instance) {
     this.instance = instance;
   }
 
   _call_indetity(properties) {
     utils.batch_or_call({
-      env: this.env,
+      env: config.env_key,
       distinct_id: this.instance.distinct_id,
       ...properties,
     });
