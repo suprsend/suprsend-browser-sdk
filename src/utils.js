@@ -5,8 +5,7 @@ import {
   constants,
 } from "./constants";
 import config from "./config";
-
-let timerID;
+import create_signature from "./encryption";
 
 function uuid() {
   var dt = new Date().getTime();
@@ -120,11 +119,19 @@ function os() {
   }
 }
 
-function api(route, body, method = "post") {
+async function api(route, body, method = "POST") {
+  const requested_date = new Date().toGMTString();
+  const req_body = JSON.stringify(body);
+  const sign = await create_signature(req_body, requested_date, "POST");
+  const authorization = sign ? `${body[0]?.env}:${sign}` : body[0]?.env;
   return fetch(`${config.api_url}/${route}`, {
     method: method,
-    body: JSON.stringify(body),
-    headers: { "Content-Type": "application/json" },
+    body: req_body,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: authorization,
+      "x-amz-date": requested_date,
+    },
   });
 }
 
@@ -163,7 +170,7 @@ function bulk_call_api() {
  schedule the flush in some time future
  */
 function schedule_flush(delay = 5000) {
-  timerID = setTimeout(() => {
+  setTimeout(() => {
     bulk_call_api();
   }, delay);
 }
@@ -210,7 +217,7 @@ function urlB64ToUint8Array(base64String) {
   const base64 = (base64String + padding)
     .replace(/\-/g, "+")
     .replace(/_/g, "/");
-  const rawData = atob(base64);
+  const rawData = window.atob(base64);
   const outputArray = new Uint8Array(rawData.length);
   for (let i = 0; i < rawData.length; ++i) {
     outputArray[i] = rawData.charCodeAt(i);
