@@ -81,8 +81,16 @@ class User {
     this.append("$sms", mobile);
   }
 
+  remove_sms(mobile = "") {
+    this.remove("$sms", mobile);
+  }
+
   add_whatsapp(mobile = "") {
     this.append("$whatsapp", mobile);
+  }
+
+  remove_sms(mobile = "") {
+    this.remove("$whatsapp", mobile);
   }
 
   add_webpush(push = "") {

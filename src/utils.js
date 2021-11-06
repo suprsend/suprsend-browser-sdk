@@ -123,7 +123,7 @@ async function api(route, body, method = "POST") {
   const requested_date = new Date().toGMTString();
   const req_body = JSON.stringify(body);
   const sign = await create_signature(req_body, requested_date, "POST");
-  const authorization = sign ? `${body[0]?.env}:${sign}` : body[0]?.env;
+  const authorization = sign ? `${config.env_key}:${sign}` : config.env_key;
   return fetch(`${config.api_url}/${route}`, {
     method: method,
     body: req_body,
