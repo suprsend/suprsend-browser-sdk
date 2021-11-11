@@ -96,18 +96,22 @@ function browser() {
       }
     }
   }
+  return "";
 }
 
 function browser_version() {
   const userAgent = navigator.userAgent;
   const browser_name = browser();
-  const regex = browser_version_useragent_map[browser_name];
-  if (regex) {
-    const result = userAgent.match(regex);
-    if (result && result.length > 1) {
-      return result[1];
+  for (let regex_item of browser_version_useragent_map[browser_name]) {
+    const regex = regex_item;
+    if (regex) {
+      const result = userAgent.match(regex);
+      if (result && result.length > 1) {
+        return result[1];
+      }
     }
   }
+  return "";
 }
 
 function os() {
@@ -117,6 +121,7 @@ function os() {
       return i;
     }
   }
+  return "";
 }
 
 async function api(route, body, method = "POST") {
