@@ -13,22 +13,22 @@ export const browser_useragent_map = {
   "Opera Mobile": ["Opera Mobi"],
   Opera: ["Opera"],
   "Internet Explorer": ["Trident", "MSIE"],
-  Chrome: ["Chrome"],
+  Chrome: ["Chrome", "CriOS"],
   Firefox: ["Firefox"],
   Safari: ["Safari"],
   Mozilla: ["Mozilla"],
 };
 
 export const browser_version_useragent_map = {
-  Edge: /Edge\/([0-9]+(\.[0-9]+)?)/,
-  "Opera Mini": /Opera Mini\/([0-9]+(\.[0-9]+)?)/,
-  "Opera Mobile": /Version\/([0-9]+(\.[0-9]+)?)/,
-  Opera: /Version\/([0-9]+(\.[0-9]+)?)/,
-  "Internet Explorer": "rv:",
-  Chrome: /Chrome\/([0-9]+(\.[0-9]+)?)/,
-  Firefox: /rv:([0-9]+(\.[0-9]+)?)/,
-  Safari: /Version\/([0-9]+(\.[0-9]+)?)/,
-  Mozilla: /rv:([0-9]+(\.[0-9]+)?)/,
+  Edge: [/Edge\/([0-9]+(\.[0-9]+)?)/],
+  "Opera Mini": [/Opera Mini\/([0-9]+(\.[0-9]+)?)/],
+  "Opera Mobile": [/Version\/([0-9]+(\.[0-9]+)?)/],
+  Opera: [/Version\/([0-9]+(\.[0-9]+)?)/],
+  "Internet Explorer": ["rv:"],
+  Chrome: [/Chrome\/([0-9]+(\.[0-9]+)?)/, /CriOS\/([0-9]+(\.[0-9]+)?)/],
+  Firefox: [/rv:([0-9]+(\.[0-9]+)?)/],
+  Safari: [/Version\/([0-9]+(\.[0-9]+)?)/],
+  Mozilla: [/rv:([0-9]+(\.[0-9]+)?)/],
 };
 
 export const os_useragent_map = {
