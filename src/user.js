@@ -1,5 +1,6 @@
 import utils from "./utils";
 import config from "./config";
+import { mobile_regx } from "./constants";
 
 class User {
   constructor(instance) {
@@ -78,7 +79,11 @@ class User {
   }
 
   add_sms(mobile = "") {
-    this.append("$sms", mobile);
+    if (mobile_regx.test(mobile)) {
+      this.append("$sms", mobile);
+    } else {
+      console.log("Suprsend: Provide valid Mobile number");
+    }
   }
 
   remove_sms(mobile = "") {
@@ -86,7 +91,11 @@ class User {
   }
 
   add_whatsapp(mobile = "") {
-    this.append("$whatsapp", mobile);
+    if (mobile_regx.test(mobile)) {
+      this.append("$whatsapp", mobile);
+    } else {
+      console.log("Suprsend: Provide valid Mobile number");
+    }
   }
 
   remove_sms(mobile = "") {
