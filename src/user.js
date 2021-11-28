@@ -1,6 +1,6 @@
 import utils from "./utils";
 import config from "./config";
-import { mobile_regx } from "./constants";
+import { parsePhoneNumber } from "libphonenumber-js";
 
 class User {
   constructor(instance) {
@@ -79,9 +79,14 @@ class User {
   }
 
   add_sms(mobile = "") {
-    if (mobile_regx.test(mobile)) {
-      this.append("$sms", mobile);
-    } else {
+    try {
+      const mobile_number = parsePhoneNumber(mobile);
+      if (mobile_number.isValid()) {
+        this.append("$sms", mobile);
+      } else {
+        console.log("Suprsend: Provide valid Mobile number");
+      }
+    } catch (err) {
       console.log("Suprsend: Provide valid Mobile number");
     }
   }
@@ -91,9 +96,14 @@ class User {
   }
 
   add_whatsapp(mobile = "") {
-    if (mobile_regx.test(mobile)) {
-      this.append("$whatsapp", mobile);
-    } else {
+    try {
+      const mobile_number = parsePhoneNumber(mobile);
+      if (mobile_number.isValid()) {
+        this.append("$whatsapp", mobile);
+      } else {
+        console.log("Suprsend: Provide valid Mobile number");
+      }
+    } catch (err) {
       console.log("Suprsend: Provide valid Mobile number");
     }
   }

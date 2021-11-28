@@ -39,5 +39,3 @@ export const os_useragent_map = {
   Android: "Android",
   Linux: "Linux",
 };
-
-export const mobile_regx = /^\+[1-9]\d{10,14}$/;
