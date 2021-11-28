@@ -3,6 +3,7 @@ import config from "./config";
 import User from "./user";
 import ServiceWorker from "./service_worker";
 import { constants } from "./constants";
+import { SSConfigurationError } from "./errors";
 
 var suprSendInstance;
 export var init_at;
@@ -13,7 +14,7 @@ class SuprSend {
       config[key] = value;
     } else {
       if (mandatory) {
-        throw Error("Mandatory Key Missing:", key);
+        throw new SSConfigurationError(`Mandatory Key Missing: ${key}`);
       }
     }
   }
@@ -67,13 +68,19 @@ class SuprSend {
       constants.super_properties_key
     );
     let new_super_props = { ...existing_super_properties, ...props };
+    let formatted_super_props = {};
+    for (let key in new_super_props) {
+      if (!has_special_char(key)) {
+        formatted_super_props[key] = new_super_props[key];
+      }
+    }
     utils.set_local_storage_item(
       constants.super_properties_key,
-      JSON.stringify(new_super_props)
+      JSON.stringify(formatted_super_props)
     );
     suprSendInstance.env_properties = {
       ...suprSendInstance.env_properties,
-      ...new_super_props,
+      ...formatted_super_props,
     };
   }
 
@@ -94,25 +101,30 @@ class SuprSend {
   }
 
   track(event, props = {}) {
-    if (event != undefined) {
-      const super_props = utils.get_parsed_local_store_data(
-        constants.super_properties_key
-      );
-      const formatted_data = utils.format_props({
-        ...props,
-        ...suprSendInstance.env_properties,
-        ...super_props,
-        $current_url: window.location.href,
-      });
-      utils.batch_or_call({
-        event: String(event),
-        distinct_id: suprSendInstance.distinct_id,
-        env: config.env_key,
-        properties: formatted_data,
-        $insert_id: utils.uuid(),
-        $time: utils.epoch_milliseconds(),
-      });
+    if (event === undefined) {
+      return;
     }
+    const super_props = utils.get_parsed_local_store_data(
+      constants.super_properties_key
+    );
+    if (utils.has_special_char(event)) {
+      console.log("Suprsend: Event Name can't start with $ or ss_");
+      return;
+    }
+    const formatted_data = utils.format_props({
+      ...props,
+      ...suprSendInstance.env_properties,
+      ...super_props,
+      $current_url: window.location.href,
+    });
+    utils.batch_or_call({
+      event: String(event),
+      distinct_id: suprSendInstance.distinct_id,
+      env: config.env_key,
+      properties: formatted_data,
+      $insert_id: utils.uuid(),
+      $time: utils.epoch_milliseconds(),
+    });
   }
 
   reset() {

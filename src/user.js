@@ -7,7 +7,7 @@ class User {
     this.instance = instance;
   }
 
-  _call_indetity(properties) {
+  _call_indentity(properties) {
     utils.batch_or_call({
       env: config.env_key,
       distinct_id: this.instance.distinct_id,
@@ -18,14 +18,14 @@ class User {
   set(key, value) {
     const body = utils.format_props(key, value);
     if (body) {
-      this._call_indetity({ $set: body });
+      this._call_indentity({ $set: body });
     }
   }
 
   set_once(key, value) {
     const body = utils.format_props(key, value);
     if (body) {
-      this._call_indetity({ $set_once: body });
+      this._call_indentity({ $set_once: body });
     }
   }
 
@@ -40,34 +40,39 @@ class User {
           delete body[key_value];
         }
       }
-      this._call_indetity({ $add: body });
+      this._call_indentity({ $add: body });
     }
   }
 
   append(key, value) {
     const body = utils.format_props(key, value);
     if (body) {
-      this._call_indetity({ $append: body });
+      this._call_indentity({ $append: body });
     }
   }
 
   remove(key, value) {
     const body = utils.format_props(key, value);
     if (body) {
-      this._call_indetity({ $remove: body });
+      this._call_indentity({ $remove: body });
     }
   }
 
   unset(key) {
     let formatted_data;
-    if (typeof key === "string") {
+    if (typeof key === "string" && !has_special_char(key)) {
       formatted_data = [String(key)];
     } else if (key instanceof Array) {
-      formatted_data = key.map((item) => String(item));
+      formatted_data = [];
+      key.forEach((item) => {
+        if (!utils.has_special_char(item)) {
+          formatted_data.push(String(item));
+        }
+      });
     } else {
       return;
     }
-    this._call_indetity({ $unset: formatted_data });
+    this._call_indentity({ $unset: formatted_data });
   }
 
   add_email(email = "") {

@@ -207,11 +207,15 @@ function format_props(key, value) {
     let keys_list = Object.keys(key);
     for (let i = 0; i < keys_list.length; i++) {
       const value = keys_list[i];
-      if (key[value] !== undefined) {
+      if (key[value] !== undefined && !has_special_char(key)) {
         formatted_data[String(value)] = key[value];
       }
     }
   } else if (value != undefined) {
+    if (has_special_char(key)) {
+      console.log("Suprsend: key cannot start with $ or ss_");
+      return;
+    }
     formatted_data = { [String(key)]: value };
   }
   return formatted_data;
@@ -229,6 +233,10 @@ function urlB64ToUint8Array(base64String) {
   }
   return outputArray;
 }
+
+const has_special_char = (str) => {
+  return str.startsWith("$") || str?.toLowerCase()?.startsWith("ss_");
+};
 
 export default {
   uuid,
@@ -249,4 +257,5 @@ export default {
   format_props,
   urlB64ToUint8Array,
   batch_or_call,
+  has_special_char,
 };
