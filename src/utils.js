@@ -200,19 +200,20 @@ function batch_or_call(body) {
   }
 }
 
-function format_props(key, value) {
+function format_props({ key, value, allow_special_tags = false }) {
   var formatted_data;
   if (key instanceof Object) {
     formatted_data = {};
-    let keys_list = Object.keys(key);
-    for (let i = 0; i < keys_list.length; i++) {
-      const value = keys_list[i];
-      if (key[value] !== undefined && !has_special_char(key)) {
-        formatted_data[String(value)] = key[value];
+    for (let item in key) {
+      if (key[item] !== undefined) {
+        if (!allow_special_tags && has_special_char(item)) {
+          continue;
+        }
+        formatted_data[String(item)] = key[item];
       }
     }
   } else if (value != undefined) {
-    if (has_special_char(key)) {
+    if (!allow_special_tags && has_special_char(key)) {
       console.log("Suprsend: key cannot start with $ or ss_");
       return;
     }

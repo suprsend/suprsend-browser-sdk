@@ -15,22 +15,31 @@ class User {
     });
   }
 
+  _allow_special_char_events = (key) => {
+    return (
+      key === "$email" ||
+      key === "$whatsapp" ||
+      key === "$sms" ||
+      key?.["$webpush"]
+    );
+  };
+
   set(key, value) {
-    const body = utils.format_props(key, value);
+    const body = utils.format_props({ key, value });
     if (body) {
       this._call_indentity({ $set: body });
     }
   }
 
   set_once(key, value) {
-    const body = utils.format_props(key, value);
+    const body = utils.format_props({ key, value });
     if (body) {
       this._call_indentity({ $set_once: body });
     }
   }
 
   increment(key, value = 1) {
-    const body = utils.format_props(key, value);
+    const body = utils.format_props({ key, value });
     if (body) {
       let keys_list = Object.keys(body);
       for (let i = 0; i < keys_list.length; i++) {
@@ -45,14 +54,16 @@ class User {
   }
 
   append(key, value) {
-    const body = utils.format_props(key, value);
+    const allow_special_tags = this._allow_special_char_events(key);
+    const body = utils.format_props({ key, value, allow_special_tags });
     if (body) {
       this._call_indentity({ $append: body });
     }
   }
 
   remove(key, value) {
-    const body = utils.format_props(key, value);
+    const allow_special_tags = this._allow_special_char_events(key);
+    const body = utils.format_props({ key, value, allow_special_tags });
     if (body) {
       this._call_indentity({ $remove: body });
     }
@@ -60,7 +71,7 @@ class User {
 
   unset(key) {
     let formatted_data;
-    if (typeof key === "string" && !has_special_char(key)) {
+    if (typeof key === "string" && !utils.has_special_char(key)) {
       formatted_data = [String(key)];
     } else if (key instanceof Array) {
       formatted_data = [];

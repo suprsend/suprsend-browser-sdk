@@ -70,7 +70,7 @@ class SuprSend {
     let new_super_props = { ...existing_super_properties, ...props };
     let formatted_super_props = {};
     for (let key in new_super_props) {
-      if (!has_special_char(key)) {
+      if (!utils.has_special_char(key)) {
         formatted_super_props[key] = new_super_props[key];
       }
     }
@@ -107,21 +107,18 @@ class SuprSend {
     const super_props = utils.get_parsed_local_store_data(
       constants.super_properties_key
     );
-    if (utils.has_special_char(event)) {
-      console.log("Suprsend: Event Name can't start with $ or ss_");
-      return;
-    }
-    const formatted_data = utils.format_props({
-      ...props,
+    const formatted_data = utils.format_props({ key: props });
+    const final_data = {
+      ...formatted_data,
       ...suprSendInstance.env_properties,
       ...super_props,
       $current_url: window.location.href,
-    });
+    };
     utils.batch_or_call({
       event: String(event),
       distinct_id: suprSendInstance.distinct_id,
       env: config.env_key,
-      properties: formatted_data,
+      properties: final_data,
       $insert_id: utils.uuid(),
       $time: utils.epoch_milliseconds(),
     });
