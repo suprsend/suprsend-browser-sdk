@@ -24,66 +24,90 @@ class User {
     );
   };
 
+  _convert_to_number(obj) {
+    if (!utils.is_empty(obj)) {
+      for (let key in obj) {
+        const number = Number(obj[key]);
+        if (!number) {
+          delete obj[key];
+        } else {
+          obj[key] = number;
+        }
+      }
+    }
+    return obj;
+  }
+
+  _validate_mobile_and_send(key, mobile) {
+    try {
+      const mobile_number = parsePhoneNumber(mobile);
+      if (mobile_number.isValid()) {
+        this.append(key, mobile);
+      } else {
+        console.log("Suprsend: Provide valid Mobile number");
+      }
+    } catch (err) {
+      console.log("Suprsend: Provide valid Mobile number");
+    }
+  }
+
   set(key, value) {
-    const body = utils.format_props({ key, value });
-    if (body) {
-      this._call_indentity({ $set: body });
+    const data = utils.format_props({ key, value });
+    if (!utils.is_empty(data)) {
+      this._call_indentity({ $set: data });
     }
   }
 
   set_once(key, value) {
-    const body = utils.format_props({ key, value });
-    if (body) {
-      this._call_indentity({ $set_once: body });
+    const data = utils.format_props({ key, value });
+    if (!utils.is_empty(data)) {
+      this._call_indentity({ $set_once: data });
     }
   }
 
   increment(key, value = 1) {
-    const body = utils.format_props({ key, value });
-    if (body) {
-      let keys_list = Object.keys(body);
-      for (let i = 0; i < keys_list.length; i++) {
-        const key_value = keys_list[i];
-        const is_number = Number(body[key_value]);
-        if (!is_number) {
-          delete body[key_value];
-        }
-      }
-      this._call_indentity({ $add: body });
+    const data = utils.format_props({ key, value });
+    const formatted_data = this._convert_to_number(data);
+    if (!utils.is_empty(formatted_data)) {
+      this._call_indentity({ $add: formatted_data });
     }
   }
 
   append(key, value) {
     const allow_special_tags = this._allow_special_char_events(key);
-    const body = utils.format_props({ key, value, allow_special_tags });
-    if (body) {
-      this._call_indentity({ $append: body });
+    const data = utils.format_props({ key, value, allow_special_tags });
+    if (!utils.is_empty(data)) {
+      this._call_indentity({ $append: data });
     }
   }
 
   remove(key, value) {
     const allow_special_tags = this._allow_special_char_events(key);
-    const body = utils.format_props({ key, value, allow_special_tags });
-    if (body) {
-      this._call_indentity({ $remove: body });
+    const data = utils.format_props({ key, value, allow_special_tags });
+    if (!utils.is_empty(data)) {
+      this._call_indentity({ $remove: data });
     }
   }
 
   unset(key) {
     let formatted_data;
-    if (typeof key === "string" && !utils.has_special_char(key)) {
-      formatted_data = [String(key)];
-    } else if (key instanceof Array) {
+    if (typeof key === "string") {
+      if (!utils.has_special_char(key)) {
+        formatted_data = [key];
+      } else {
+        console.log("Suprsend: key cannot start with $ or ss_");
+      }
+    } else if (Array.isArray(key)) {
       formatted_data = [];
       key.forEach((item) => {
-        if (!utils.has_special_char(item)) {
+        if (!utils.has_special_char(String(item))) {
           formatted_data.push(String(item));
         }
       });
-    } else {
-      return;
     }
-    this._call_indentity({ $unset: formatted_data });
+    if (!utils.is_empty(formatted_data)) {
+      this._call_indentity({ $unset: formatted_data });
+    }
   }
 
   add_email(email = "") {
@@ -95,16 +119,7 @@ class User {
   }
 
   add_sms(mobile = "") {
-    try {
-      const mobile_number = parsePhoneNumber(mobile);
-      if (mobile_number.isValid()) {
-        this.append("$sms", mobile);
-      } else {
-        console.log("Suprsend: Provide valid Mobile number");
-      }
-    } catch (err) {
-      console.log("Suprsend: Provide valid Mobile number");
-    }
+    this._validate_mobile_and_send("$sms", mobile);
   }
 
   remove_sms(mobile = "") {
@@ -112,19 +127,10 @@ class User {
   }
 
   add_whatsapp(mobile = "") {
-    try {
-      const mobile_number = parsePhoneNumber(mobile);
-      if (mobile_number.isValid()) {
-        this.append("$whatsapp", mobile);
-      } else {
-        console.log("Suprsend: Provide valid Mobile number");
-      }
-    } catch (err) {
-      console.log("Suprsend: Provide valid Mobile number");
-    }
+    this._validate_mobile_and_send("$whatsapp", mobile);
   }
 
-  remove_sms(mobile = "") {
+  remove_whatsapp(mobile = "") {
     this.remove("$whatsapp", mobile);
   }
 

@@ -213,7 +213,7 @@ function format_props({ key, value, allow_special_tags = false }) {
       }
     }
   } else if (value != undefined) {
-    if (!allow_special_tags && has_special_char(key)) {
+    if (!allow_special_tags && has_special_char(String(key))) {
       console.log("Suprsend: key cannot start with $ or ss_");
       return;
     }
@@ -239,6 +239,17 @@ const has_special_char = (str) => {
   return str.startsWith("$") || str?.toLowerCase()?.startsWith("ss_");
 };
 
+const is_empty = (value) => {
+  if (Array.isArray(value)) {
+    return value.length === 0;
+  } else if (value instanceof Object) {
+    return Object.keys(value).length === 0;
+  } else {
+    const empty_values = ["", null, undefined];
+    return empty_values.includes(value);
+  }
+};
+
 export default {
   uuid,
   epoch_milliseconds,
@@ -259,4 +270,5 @@ export default {
   urlB64ToUint8Array,
   batch_or_call,
   has_special_char,
+  is_empty,
 };

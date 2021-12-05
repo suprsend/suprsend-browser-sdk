@@ -1,6 +1,5 @@
 const package_data = require("../package.json");
 
-// suprsend sdk related config
 const config = {
   api_url: "https://hub.suprsend.com",
   sdk_version: package_data.version,

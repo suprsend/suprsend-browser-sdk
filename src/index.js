@@ -9,39 +9,6 @@ var suprSendInstance;
 export var init_at;
 
 class SuprSend {
-  setCustomConfigProperty(key, value = "", mandatory = false) {
-    if (value) {
-      config[key] = value;
-    } else {
-      if (mandatory) {
-        throw new SSConfigurationError(`Mandatory Key Missing: ${key}`);
-      }
-    }
-  }
-
-  setCustomConfig(config_keys) {
-    this.setCustomConfigProperty("env_key", config_keys.env, true);
-    this.setCustomConfigProperty("signing_key", config_keys.signing_key, true);
-    this.setCustomConfigProperty("api_url", config_keys?.api_url);
-    this.setCustomConfigProperty("vapid_key", config_keys?.vapid_key);
-  }
-
-  static setEnvProperties() {
-    let device_id = utils.get_local_storage_item(constants.device_id_key);
-    if (!device_id) {
-      device_id = utils.uuid();
-      utils.set_local_storage_item(constants.device_id_key, device_id);
-    }
-    suprSendInstance.env_properties = {
-      $os: utils.os(),
-      $browser: utils.browser(),
-      $browser_version: utils.browser_version(),
-      $sdk_type: "Browser",
-      $device_id: device_id,
-      $sdk_version: config.sdk_version,
-    };
-  }
-
   init(ENV_API_KEY, SIGNING_KEY, config_keys = {}) {
     config_keys.env = ENV_API_KEY;
     config_keys.signing_key = SIGNING_KEY;
@@ -61,6 +28,39 @@ class SuprSend {
     this.sw.update_subscription();
     SuprSend.setEnvProperties();
     utils.schedule_flush();
+  }
+
+  static setEnvProperties() {
+    let device_id = utils.get_local_storage_item(constants.device_id_key);
+    if (!device_id) {
+      device_id = utils.uuid();
+      utils.set_local_storage_item(constants.device_id_key, device_id);
+    }
+    suprSendInstance.env_properties = {
+      $os: utils.os(),
+      $browser: utils.browser(),
+      $browser_version: utils.browser_version(),
+      $sdk_type: "Browser",
+      $device_id: device_id,
+      $sdk_version: config.sdk_version,
+    };
+  }
+
+  setCustomConfigProperty(key, value = "", mandatory = false) {
+    if (value) {
+      config[key] = value;
+    } else {
+      if (mandatory) {
+        throw new SSConfigurationError(`Mandatory Key Missing: ${key}`);
+      }
+    }
+  }
+
+  setCustomConfig(config_keys) {
+    this.setCustomConfigProperty("env_key", config_keys.env, true);
+    this.setCustomConfigProperty("signing_key", config_keys.signing_key, true);
+    this.setCustomConfigProperty("api_url", config_keys?.api_url);
+    this.setCustomConfigProperty("vapid_key", config_keys?.vapid_key);
   }
 
   set_super_properties(props = {}) {
