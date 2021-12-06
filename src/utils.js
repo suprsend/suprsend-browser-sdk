@@ -200,18 +200,23 @@ function batch_or_call(body) {
   }
 }
 
-function format_props(key, value) {
+function format_props({ key, value, allow_special_tags = false }) {
   var formatted_data;
   if (key instanceof Object) {
     formatted_data = {};
-    let keys_list = Object.keys(key);
-    for (let i = 0; i < keys_list.length; i++) {
-      const value = keys_list[i];
-      if (key[value] !== undefined) {
-        formatted_data[String(value)] = key[value];
+    for (let item in key) {
+      if (key[item] !== undefined) {
+        if (!allow_special_tags && has_special_char(item)) {
+          continue;
+        }
+        formatted_data[String(item)] = key[item];
       }
     }
   } else if (value != undefined) {
+    if (!allow_special_tags && has_special_char(String(key))) {
+      console.log("Suprsend: key cannot start with $ or ss_");
+      return;
+    }
     formatted_data = { [String(key)]: value };
   }
   return formatted_data;
@@ -229,6 +234,21 @@ function urlB64ToUint8Array(base64String) {
   }
   return outputArray;
 }
+
+const has_special_char = (str) => {
+  return str.startsWith("$") || str?.toLowerCase()?.startsWith("ss_");
+};
+
+const is_empty = (value) => {
+  if (Array.isArray(value)) {
+    return value.length === 0;
+  } else if (value instanceof Object) {
+    return Object.keys(value).length === 0;
+  } else {
+    const empty_values = ["", null, undefined];
+    return empty_values.includes(value);
+  }
+};
 
 export default {
   uuid,
@@ -249,4 +269,6 @@ export default {
   format_props,
   urlB64ToUint8Array,
   batch_or_call,
+  has_special_char,
+  is_empty,
 };
