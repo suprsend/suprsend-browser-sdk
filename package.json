@@ -1,13 +1,13 @@
 {
   "name": "@suprsend/web-sdk",
-  "version": "0.1.17",
+  "version": "0.1.20",
   "description": "This is sdk used to integrate suprsend functionality in javascript applications",
   "main": "dist/cjs_bundle.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rm -rf dist && webpack --env module_type=commonjs --env filename=cjs_bundle.js  && webpack --env module_type=window --env filename=cdn_bundle.js",
-    "publish_sdk": "npm run build && npm publish",
-    "minify-sw": "touch ./serviceworker/serviceworker.min.js && rm ./serviceworker/serviceworker.min.js && minify ./serviceworker/serviceworker.js > ./serviceworker/serviceworker.min.js"
+    "minify-sw": "touch ./serviceworker/serviceworker.min.js && rm ./serviceworker/serviceworker.min.js && minify ./serviceworker/serviceworker.js > ./serviceworker/serviceworker.min.js",
+    "publish-sdk": "npm run build && npm publish"
   },
   "keywords": [
     "suprsend",
