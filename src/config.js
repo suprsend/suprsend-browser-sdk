@@ -4,7 +4,7 @@ const config = {
   api_url: "https://hub.suprsend.com",
   sdk_version: package_data.version,
   batch_size: 20,
-  service_worker_file: "suprsend_service_worker.js",
+  service_worker_file: "serviceworker.js",
   sw_delay: 5000, //in ms,
 };
 

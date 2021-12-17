@@ -61,6 +61,10 @@ class SuprSend {
     this.setCustomConfigProperty("signing_key", config_keys.signing_key, true);
     this.setCustomConfigProperty("api_url", config_keys?.api_url);
     this.setCustomConfigProperty("vapid_key", config_keys?.vapid_key);
+    this.setCustomConfigProperty(
+      "service_worker_file",
+      config_keys?.sw_file_name
+    );
   }
 
   set_super_properties(props = {}) {
