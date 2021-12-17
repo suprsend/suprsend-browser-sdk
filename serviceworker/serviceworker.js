@@ -1,5 +1,5 @@
 var suprsend_config = {
-  api_url: "https://collector-staging.suprsend.workers.dev",
+  api_url: "https://hub.suprsend.com",
   imgkit_root: "https://ik.imagekit.io/l0quatz6utm/",
   api_events_route: "event/",
 };
