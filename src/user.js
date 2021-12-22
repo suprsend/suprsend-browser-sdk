@@ -138,6 +138,7 @@ class User {
     this.append({
       $webpush: push,
       $device_id: this.instance?.env_properties?.$device_id,
+      $pushvendor: "vapid",
     });
   }
 }
