@@ -27,7 +27,7 @@ class SuprSend {
     this.sw = new ServiceWorker(suprSendInstance);
     this.sw.update_subscription();
     SuprSend.setEnvProperties();
-    utils.schedule_flush();
+    utils.bulk_call_api();
   }
 
   static setEnvProperties() {

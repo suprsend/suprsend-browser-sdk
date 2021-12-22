@@ -174,7 +174,7 @@ function bulk_call_api() {
 /* 
  schedule the flush in some time future
  */
-function schedule_flush(delay = 5000) {
+function schedule_flush(delay = config.flush_interval) {
   setTimeout(() => {
     bulk_call_api();
   }, delay);
@@ -271,4 +271,5 @@ export default {
   batch_or_call,
   has_special_char,
   is_empty,
+  bulk_call_api,
 };
