@@ -101,6 +101,7 @@ class SuprSend {
       utils.set_cookie(constants.distinct_id, unique_id);
       suprSendInstance.distinct_id = unique_id;
       suprSendInstance._user_identified = true;
+      this.sw.update_subscription();
     }
   }
 
