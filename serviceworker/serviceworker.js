@@ -52,8 +52,11 @@ var valid_notification_params = [
 
 var url_fields = ["image", "icon", "badge"];
 
-function init_workspace(key) {
+function init_workspace(key, url) {
   suprsend_config.workspace_key = key;
+  if (url) {
+    suprsend_config.api_url = url;
+  }
 }
 
 function validate_notification(notification_obj) {
