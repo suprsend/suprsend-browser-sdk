@@ -1,7 +1,35 @@
+function uuid() {
+  var dt = new Date().getTime();
+  var uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+    /[xy]/g,
+    function (c) {
+      var r = (dt + Math.random() * 16) % 16 | 0;
+      dt = Math.floor(dt / 16);
+      return (c == "x" ? r : (r & 0x3) | 0x8).toString(16);
+    }
+  );
+  return uuid;
+}
+
+function epoch_milliseconds() {
+  return Math.round(Date.now());
+}
+
+function safe_get(cb, default_value) {
+  var resp;
+  try {
+    resp = cb();
+  } catch (err) {
+    resp = default_value;
+  }
+  return resp;
+}
+
 var suprsend_config = {
   api_url: "https://hub.suprsend.com",
   imgkit_root: "https://ik.imagekit.io/l0quatz6utm/",
   api_events_route: "event/",
+  workspace_key: "",
 };
 
 var valid_notification_params = [
@@ -22,20 +50,14 @@ var valid_notification_params = [
   "actions",
 ];
 
-const url_fields = ["image", "icon", "badge"];
+var url_fields = ["image", "icon", "badge"];
 
-function safe_get(cb, default_value) {
-  let resp;
-  try {
-    resp = cb();
-  } catch (err) {
-    resp = default_value;
-  }
-  return resp;
+function init_workspace(key) {
+  suprsend_config.workspace_key = key;
 }
 
 function validate_notification(notification_obj) {
-  let validated_notification_obj = {};
+  var validated_notification_obj = {};
   for (var item in notification_obj) {
     if (valid_notification_params.includes(item)) {
       if (url_fields.includes(item)) {
@@ -53,7 +75,7 @@ function validate_notification(notification_obj) {
   return validated_notification_obj;
 }
 
-function track_data(body, method = "post") {
+function call_ss_api(body, method = "post") {
   return fetch(
     `${suprsend_config.api_url}/${suprsend_config.api_events_route}`,
     {
@@ -64,15 +86,21 @@ function track_data(body, method = "post") {
   );
 }
 
+function send_notification_event(event_name, event_properties) {
+  call_ss_api({
+    event: event_name,
+    env: suprsend_config.workspace_key,
+    $insert_id: uuid(),
+    $time: epoch_milliseconds(),
+    properties: event_properties,
+  });
+}
+
 self.addEventListener("push", function (e) {
   var notification = e.data.json();
-  const validated_notification = validate_notification(notification);
-  console.log("Received notification", validated_notification);
-  track_data({
-    event: "$notification_delivered",
-    properties: {
-      id: safe_get(() => validated_notification.data.notification_id),
-    },
+  var validated_notification = validate_notification(notification);
+  send_notification_event("$notification_delivered", {
+    id: safe_get(() => validated_notification.data.notification_id),
   });
   e.waitUntil(
     self.registration.showNotification(
@@ -84,25 +112,17 @@ self.addEventListener("push", function (e) {
 
 self.addEventListener("notificationclose", function (e) {
   var notification = e.notification;
-  console.log("Closed notification", notification);
-  track_data({
-    event: "$notification_dismiss",
-    properties: {
-      id: safe_get(() => notification.data.notification_id),
-    },
+  send_notification_event("$notification_dismiss", {
+    id: safe_get(() => notification.data.notification_id),
   });
 });
 
 self.addEventListener("notificationclick", function (e) {
   e.notification.close();
   var notification = e.notification;
-  console.log("Clicked notification", notification);
-  track_data({
-    event: "$notification_clicked",
-    properties: {
-      id: safe_get(() => notification.data.notification_id),
-      label_id: e.action,
-    },
+  send_notification_event("$notification_clicked", {
+    id: safe_get(() => notification.data.notification_id),
+    label_id: e.action,
   });
   var launch_url_obj = safe_get(() => notification.data.launch_urls);
   var redirect_url = "/";

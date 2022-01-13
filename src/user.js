@@ -11,6 +11,8 @@ class User {
     utils.batch_or_call({
       env: config.env_key,
       distinct_id: this.instance.distinct_id,
+      $insert_id: utils.uuid(),
+      $time: utils.epoch_milliseconds(),
       ...properties,
     });
   }
