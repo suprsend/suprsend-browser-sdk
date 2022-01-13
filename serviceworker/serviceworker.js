@@ -76,12 +76,18 @@ function validate_notification(notification_obj) {
 }
 
 function call_ss_api(body, method = "post") {
+  var requested_date = new Date().toGMTString();
+  var authorization = suprsend_config.workspace_key + ":";
   return fetch(
     `${suprsend_config.api_url}/${suprsend_config.api_events_route}`,
     {
       method: method,
       body: JSON.stringify(body),
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: authorization,
+        "x-amz-date": requested_date,
+      },
     }
   );
 }
