@@ -1,12 +1,11 @@
 {
   "name": "@suprsend/web-sdk",
-  "version": "0.1.22",
+  "version": "0.1.24",
   "description": "This is sdk used to integrate suprsend functionality in javascript applications",
   "main": "dist/cjs_bundle.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rm -rf dist && webpack --env module_type=commonjs --env filename=cjs_bundle.js  && webpack --env module_type=window --env filename=cdn_bundle.js",
-    "minify-sw": "touch ./serviceworker/serviceworker.min.js && rm ./serviceworker/serviceworker.min.js && minify ./serviceworker/serviceworker.js > ./serviceworker/serviceworker.min.js",
     "publish-sdk": "npm run build && npm publish"
   },
   "keywords": [
@@ -15,7 +14,7 @@
     "suprsend-browser-sdk"
   ],
   "author": "Sivaram Katta",
-  "license": "ISC",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/suprsend/suprsend-browser.git"
@@ -27,7 +26,6 @@
     "@babel/core": "^7.15.0",
     "@babel/preset-env": "^7.15.0",
     "babel-loader": "^8.2.2",
-    "minify": "^8.0.3",
     "webpack": "^5.51.1",
     "webpack-cli": "^4.8.0"
   },
