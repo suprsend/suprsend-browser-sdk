@@ -1,7 +1,7 @@
 import utils from "./utils";
 import config from "./config";
 import User from "./user";
-import ServiceWorker from "./service_worker";
+import WebPush from "./web_push";
 import { constants } from "./constants";
 import { SSConfigurationError } from "./errors";
 
@@ -24,8 +24,8 @@ class SuprSend {
     }
     suprSendInstance.distinct_id = distinct_id;
     this.user = new User(suprSendInstance);
-    this.sw = new ServiceWorker(suprSendInstance);
-    this.sw.update_subscription();
+    this.web_push = new WebPush(suprSendInstance);
+    this.web_push.update_subscription();
     SuprSend.setEnvProperties();
     utils.bulk_call_api();
   }
@@ -101,7 +101,7 @@ class SuprSend {
       utils.set_cookie(constants.distinct_id, unique_id);
       suprSendInstance.distinct_id = unique_id;
       suprSendInstance._user_identified = true;
-      this.sw.update_subscription();
+      this.web_push.update_subscription();
     }
   }
 
@@ -138,7 +138,7 @@ class SuprSend {
     };
     utils.remove_local_storage_item(constants.super_properties_key);
     this.user = new User(suprSendInstance);
-    this.sw = new ServiceWorker(suprSendInstance);
+    this.web_push = new WebPush(suprSendInstance);
     SuprSend.setEnvProperties();
   }
 }
