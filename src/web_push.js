@@ -4,7 +4,7 @@ import User from "./user";
 import { init_at } from "./index";
 
 var notification_timer;
-class ServiceWorker {
+class WebPush {
   constructor(instance) {
     this.instance = instance;
     this.user = new User(instance);
@@ -120,4 +120,4 @@ class ServiceWorker {
   // };
 }
 
-export default ServiceWorker;
+export default WebPush;
