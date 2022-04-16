@@ -93,6 +93,8 @@ class SuprSend {
       utils.batch_or_call({
         env: config.env_key,
         event: "$identify",
+        $insert_id: utils.uuid(),
+        $time: utils.epoch_milliseconds(),
         properties: {
           $identified_id: unique_id,
           $anon_id: suprSendInstance.distinct_id,
