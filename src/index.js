@@ -6,13 +6,12 @@ import { constants } from "./constants";
 import { SSConfigurationError } from "./errors";
 
 var suprSendInstance;
-export var init_at;
+export var initCalledAt;
 
 class SuprSend {
   init(ENV_API_KEY, SIGNING_KEY, config_keys = {}) {
     config_keys.env = ENV_API_KEY;
     config_keys.signing_key = SIGNING_KEY;
-    init_at = new Date();
     var distinct_id = utils.get_cookie(constants.distinct_id);
     if (!suprSendInstance) {
       suprSendInstance = {};
@@ -27,7 +26,10 @@ class SuprSend {
     this.web_push = new WebPush(suprSendInstance);
     this.web_push.update_subscription();
     SuprSend.setEnvProperties();
-    utils.bulk_call_api();
+    if (!initCalledAt) {
+      utils.bulk_call_api();
+    }
+    initCalledAt = new Date();
   }
 
   static setEnvProperties() {
