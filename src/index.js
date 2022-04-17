@@ -2,11 +2,11 @@ import utils from "./utils";
 import config from "./config";
 import User from "./user";
 import WebPush from "./web_push";
-import { constants } from "./constants";
+import { constants, internal_events } from "./constants";
 import { SSConfigurationError } from "./errors";
 
 var suprSendInstance;
-export var initCalledAt;
+export var initialisedAt;
 
 class SuprSend {
   init(ENV_API_KEY, SIGNING_KEY, config_keys = {}) {
@@ -26,10 +26,11 @@ class SuprSend {
     this.web_push = new WebPush(suprSendInstance);
     this.web_push.update_subscription();
     SuprSend.setEnvProperties();
-    if (!initCalledAt) {
+    if (!initialisedAt) {
       utils.bulk_call_api();
+      this.track(internal_events.app_launched);
     }
-    initCalledAt = new Date();
+    initialisedAt = new Date();
   }
 
   static setEnvProperties() {
@@ -106,11 +107,18 @@ class SuprSend {
       suprSendInstance.distinct_id = unique_id;
       suprSendInstance._user_identified = true;
       this.web_push.update_subscription();
+      this.track(internal_events.user_login);
     }
   }
 
   track(event, props = {}) {
     if (event === undefined) {
+      return;
+    } else if (
+      !utils.is_internal_event(event) &&
+      utils.has_special_char(event)
+    ) {
+      console.log("Suprsend: key cannot start with $ or ss_");
       return;
     }
     const super_props = utils.get_parsed_local_store_data(
@@ -133,7 +141,12 @@ class SuprSend {
     });
   }
 
+  purchase_made(props) {
+    this.track(internal_events.purchase_made, props);
+  }
+
   reset() {
+    this.track(internal_events.user_logout);
     var distinct_id = utils.uuid();
     utils.set_cookie(constants.distinct_id, distinct_id);
     suprSendInstance = {

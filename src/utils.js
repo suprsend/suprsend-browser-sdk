@@ -3,6 +3,7 @@ import {
   browser_version_useragent_map,
   os_useragent_map,
   constants,
+  internal_events,
 } from "./constants";
 import config from "./config";
 import create_signature from "./encryption";
@@ -240,6 +241,11 @@ const has_special_char = (str) => {
   return str.startsWith("$") || str?.toLowerCase()?.startsWith("ss_");
 };
 
+const is_internal_event = (event) => {
+  const internal_events_list = Object.values(internal_events);
+  return internal_events_list.includes(event);
+};
+
 const is_empty = (value) => {
   if (Array.isArray(value)) {
     return value.length === 0;
@@ -273,4 +279,5 @@ export default {
   has_special_char,
   is_empty,
   bulk_call_api,
+  is_internal_event,
 };

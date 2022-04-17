@@ -1,7 +1,7 @@
 import utils from "./utils";
 import config from "./config";
 import User from "./user";
-import { initCalledAt } from "./index";
+import { initialisedAt } from "./index";
 
 var notification_timer;
 class WebPush {
@@ -45,7 +45,7 @@ class WebPush {
   // this method make sure there is a given delay, as calling notification permission just after load is not good UX practice
   _subscribe_with_delay() {
     const now = new Date();
-    const delay = now - initCalledAt;
+    const delay = now - initialisedAt;
     const has_delay = delay >= config.sw_delay;
     if (has_delay) {
       this._register_sw();
