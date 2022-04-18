@@ -7,6 +7,13 @@ export const constants = {
   device_id_key: "_suprsend_device_id",
 };
 
+export const internal_events = {
+  app_launched: "$app_launched",
+  user_login: "$user_login",
+  user_logout: "$user_logout",
+  purchase_made: "$purchase_made",
+};
+
 export const browser_useragent_map = {
   Edge: ["Edge"],
   "Opera Mini": ["Opera Mini"],

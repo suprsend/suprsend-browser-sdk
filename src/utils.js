@@ -3,6 +3,7 @@ import {
   browser_version_useragent_map,
   os_useragent_map,
   constants,
+  internal_events,
 } from "./constants";
 import config from "./config";
 import create_signature from "./encryption";
@@ -207,6 +208,7 @@ function format_props({ key, value, allow_special_tags = false }) {
     for (let item in key) {
       if (key[item] !== undefined) {
         if (!allow_special_tags && has_special_char(item)) {
+          console.log("Suprsend: key cannot start with $ or ss_");
           continue;
         }
         formatted_data[String(item)] = key[item];
@@ -237,6 +239,11 @@ function urlB64ToUint8Array(base64String) {
 
 const has_special_char = (str) => {
   return str.startsWith("$") || str?.toLowerCase()?.startsWith("ss_");
+};
+
+const is_internal_event = (event) => {
+  const internal_events_list = Object.values(internal_events);
+  return internal_events_list.includes(event);
 };
 
 const is_empty = (value) => {
@@ -272,4 +279,5 @@ export default {
   has_special_char,
   is_empty,
   bulk_call_api,
+  is_internal_event,
 };

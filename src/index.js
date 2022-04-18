@@ -2,17 +2,16 @@ import utils from "./utils";
 import config from "./config";
 import User from "./user";
 import WebPush from "./web_push";
-import { constants } from "./constants";
+import { constants, internal_events } from "./constants";
 import { SSConfigurationError } from "./errors";
 
 var suprSendInstance;
-export var init_at;
+export var initialisedAt;
 
 class SuprSend {
   init(ENV_API_KEY, SIGNING_KEY, config_keys = {}) {
     config_keys.env = ENV_API_KEY;
     config_keys.signing_key = SIGNING_KEY;
-    init_at = new Date();
     var distinct_id = utils.get_cookie(constants.distinct_id);
     if (!suprSendInstance) {
       suprSendInstance = {};
@@ -27,7 +26,11 @@ class SuprSend {
     this.web_push = new WebPush(suprSendInstance);
     this.web_push.update_subscription();
     SuprSend.setEnvProperties();
-    utils.bulk_call_api();
+    if (!initialisedAt) {
+      utils.bulk_call_api();
+      this.track(internal_events.app_launched);
+    }
+    initialisedAt = new Date();
   }
 
   static setEnvProperties() {
@@ -93,6 +96,8 @@ class SuprSend {
       utils.batch_or_call({
         env: config.env_key,
         event: "$identify",
+        $insert_id: utils.uuid(),
+        $time: utils.epoch_milliseconds(),
         properties: {
           $identified_id: unique_id,
           $anon_id: suprSendInstance.distinct_id,
@@ -102,11 +107,18 @@ class SuprSend {
       suprSendInstance.distinct_id = unique_id;
       suprSendInstance._user_identified = true;
       this.web_push.update_subscription();
+      this.track(internal_events.user_login);
     }
   }
 
   track(event, props = {}) {
     if (event === undefined) {
+      return;
+    } else if (
+      !utils.is_internal_event(event) &&
+      utils.has_special_char(event)
+    ) {
+      console.log("Suprsend: key cannot start with $ or ss_");
       return;
     }
     const super_props = utils.get_parsed_local_store_data(
@@ -129,7 +141,12 @@ class SuprSend {
     });
   }
 
+  purchase_made(props) {
+    this.track(internal_events.purchase_made, props);
+  }
+
   reset() {
+    this.track(internal_events.user_logout);
     var distinct_id = utils.uuid();
     utils.set_cookie(constants.distinct_id, distinct_id);
     suprSendInstance = {
