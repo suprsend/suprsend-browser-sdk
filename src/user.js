@@ -1,5 +1,6 @@
 import utils from "./utils";
 import config from "./config";
+import { regex } from "./constants";
 import { parsePhoneNumber } from "libphonenumber-js";
 
 class User {
@@ -38,6 +39,14 @@ class User {
       }
     }
     return obj;
+  }
+
+  _validate_email_and_send(key, email) {
+    if (regex.email.test(email)) {
+      this.append(key, mobile);
+    } else {
+      console.log("Suprsend: Provide valid Email ID");
+    }
   }
 
   _validate_mobile_and_send(key, mobile) {
@@ -113,7 +122,7 @@ class User {
   }
 
   add_email(email = "") {
-    this.append("$email", email);
+    this._validate_email_and_send("$email", email);
   }
 
   remove_email(email = "") {
