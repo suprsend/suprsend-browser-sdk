@@ -43,7 +43,7 @@ class User {
 
   _validate_email_and_send(key, email) {
     if (regex.email.test(email)) {
-      this.append(key, mobile);
+      this.append(key, email);
     } else {
       console.log("Suprsend: Provide valid Email ID");
     }
