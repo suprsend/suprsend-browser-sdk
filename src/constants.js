@@ -1,6 +1,17 @@
 // suprsend sdk related constants
 export const constants = {
   distinct_id: "_suprsend_dist_id",
+  bulk_events_key: "_bulk_api_call",
+  api_events_route: "event/",
+  super_properties_key: "_suprsend_super_props",
+  device_id_key: "_suprsend_device_id",
+};
+
+export const internal_events = {
+  app_launched: "$app_launched",
+  user_login: "$user_login",
+  user_logout: "$user_logout",
+  purchase_made: "$purchase_made",
 };
 
 export const browser_useragent_map = {
@@ -9,22 +20,22 @@ export const browser_useragent_map = {
   "Opera Mobile": ["Opera Mobi"],
   Opera: ["Opera"],
   "Internet Explorer": ["Trident", "MSIE"],
-  Chrome: ["Chrome"],
+  Chrome: ["Chrome", "CriOS"],
   Firefox: ["Firefox"],
   Safari: ["Safari"],
   Mozilla: ["Mozilla"],
 };
 
 export const browser_version_useragent_map = {
-  Edge: /Edge\/([0-9]+(\.[0-9]+)?)/,
-  "Opera Mini": /Opera Mini\/([0-9]+(\.[0-9]+)?)/,
-  "Opera Mobile": /Version\/([0-9]+(\.[0-9]+)?)/,
-  Opera: /Version\/([0-9]+(\.[0-9]+)?)/,
-  "Internet Explorer": "rv:",
-  Chrome: /Chrome\/([0-9]+(\.[0-9]+)?)/,
-  Firefox: /rv:([0-9]+(\.[0-9]+)?)/,
-  Safari: /Version\/([0-9]+(\.[0-9]+)?)/,
-  Mozilla: /rv:([0-9]+(\.[0-9]+)?)/,
+  Edge: [/Edge\/([0-9]+(\.[0-9]+)?)/],
+  "Opera Mini": [/Opera Mini\/([0-9]+(\.[0-9]+)?)/],
+  "Opera Mobile": [/Version\/([0-9]+(\.[0-9]+)?)/],
+  Opera: [/Version\/([0-9]+(\.[0-9]+)?)/],
+  "Internet Explorer": ["rv:"],
+  Chrome: [/Chrome\/([0-9]+(\.[0-9]+)?)/, /CriOS\/([0-9]+(\.[0-9]+)?)/],
+  Firefox: [/rv:([0-9]+(\.[0-9]+)?)/],
+  Safari: [/Version\/([0-9]+(\.[0-9]+)?)/],
+  Mozilla: [/rv:([0-9]+(\.[0-9]+)?)/],
 };
 
 export const os_useragent_map = {
@@ -35,3 +46,5 @@ export const os_useragent_map = {
   Android: "Android",
   Linux: "Linux",
 };
+
+export const regex = { email: /\S+@\S+\.\S+/ };

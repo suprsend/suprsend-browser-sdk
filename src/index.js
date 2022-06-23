@@ -1,76 +1,163 @@
 import utils from "./utils";
 import config from "./config";
-import { constants } from "./constants";
+import User from "./user";
+import WebPush from "./web_push";
+import { constants, internal_events } from "./constants";
+import { SSConfigurationError } from "./errors";
 
-// api calls function
-function call_api(route, body, method = "post") {
-  fetch(`${config.api_url}/${route}`, {
-    method: method,
-    body: JSON.stringify(body),
-  })
-    .then(() => console.log("success"))
-    .catch((err) => console.log("error occured", err));
-}
-
-// initializing supersend library function
-function SuprSend() {}
 var suprSendInstance;
+export var initialisedAt;
 
-function create_instance(ENV_API_Key) {
-  var distinct_id = utils.get_cookie(constants.distinct_id);
-  if (!suprSendInstance) {
-    suprSendInstance = { ENV_API_Key: ENV_API_Key };
+class SuprSend {
+  init(ENV_API_KEY, SIGNING_KEY, config_keys = {}) {
+    config_keys.env = ENV_API_KEY;
+    config_keys.signing_key = SIGNING_KEY;
+    var distinct_id = utils.get_cookie(constants.distinct_id);
+    if (!suprSendInstance) {
+      suprSendInstance = {};
+      this.setCustomConfig(config_keys);
+    }
+    if (!distinct_id) {
+      distinct_id = utils.uuid();
+      utils.set_cookie(constants.distinct_id, distinct_id);
+    }
+    suprSendInstance.distinct_id = distinct_id;
+    this.user = new User(suprSendInstance);
+    this.web_push = new WebPush(suprSendInstance);
+    this.web_push.update_subscription();
+    SuprSend.setEnvProperties();
+    if (!initialisedAt) {
+      utils.bulk_call_api();
+      this.track(internal_events.app_launched);
+    }
+    initialisedAt = new Date();
   }
-  if (!distinct_id) {
-    distinct_id = utils.uuid();
-    utils.set_cookie(constants.distinct_id, distinct_id);
+
+  static setEnvProperties() {
+    let device_id = utils.get_local_storage_item(constants.device_id_key);
+    if (!device_id) {
+      device_id = utils.uuid();
+      utils.set_local_storage_item(constants.device_id_key, device_id);
+    }
+    suprSendInstance.env_properties = {
+      $os: utils.os(),
+      $browser: utils.browser(),
+      $browser_version: utils.browser_version(),
+      $sdk_type: "Browser",
+      $device_id: device_id,
+      $sdk_version: config.sdk_version,
+    };
   }
-  suprSendInstance.distinct_id = distinct_id;
-  SuprSend.setEnvProperties();
-  return suprSendInstance;
-}
 
-SuprSend.setEnvProperties = function () {
-  suprSendInstance.env_properties = {
-    os: utils.os(),
-    browser: utils.browser(),
-    browser_version: utils.browser_version(),
-    sdk_type: "Browser",
-    sdk_version: config.sdk_version,
-  };
-};
+  setCustomConfigProperty(key, value = "", mandatory = false) {
+    if (value) {
+      config[key] = value;
+    } else {
+      if (mandatory) {
+        throw new SSConfigurationError(`Mandatory Key Missing: ${key}`);
+      }
+    }
+  }
 
-SuprSend.prototype.initialize = function (ENV_API_Key) {
-  create_instance(ENV_API_Key);
-};
+  setCustomConfig(config_keys) {
+    this.setCustomConfigProperty("env_key", config_keys.env, true);
+    this.setCustomConfigProperty("signing_key", config_keys.signing_key, true);
+    this.setCustomConfigProperty("api_url", config_keys?.api_url);
+    this.setCustomConfigProperty("vapid_key", config_keys?.vapid_key);
+    this.setCustomConfigProperty(
+      "service_worker_file",
+      config_keys?.sw_file_name
+    );
+  }
 
-SuprSend.prototype.identify = function (unique_id) {
-  if (!suprSendInstance._user_identified) {
-    call_api("identify/", {
-      ENV_API_Key: suprSendInstance.ENV_API_Key,
-      event: "$identify",
-      properties: {
-        identified_id: unique_id,
-        anon_id: suprSendInstance.distinct_id,
-      },
+  set_super_properties(props = {}) {
+    let existing_super_properties = utils.get_parsed_local_store_data(
+      constants.super_properties_key
+    );
+    let new_super_props = { ...existing_super_properties, ...props };
+    let formatted_super_props = {};
+    for (let key in new_super_props) {
+      if (!utils.has_special_char(key)) {
+        formatted_super_props[key] = new_super_props[key];
+      }
+    }
+    utils.set_local_storage_item(
+      constants.super_properties_key,
+      JSON.stringify(formatted_super_props)
+    );
+    suprSendInstance.env_properties = {
+      ...suprSendInstance.env_properties,
+      ...formatted_super_props,
+    };
+  }
+
+  identify(unique_id) {
+    if (!suprSendInstance._user_identified) {
+      utils.batch_or_call({
+        env: config.env_key,
+        event: "$identify",
+        $insert_id: utils.uuid(),
+        $time: utils.epoch_milliseconds(),
+        properties: {
+          $identified_id: unique_id,
+          $anon_id: suprSendInstance.distinct_id,
+        },
+      });
+      utils.set_cookie(constants.distinct_id, unique_id);
+      suprSendInstance.distinct_id = unique_id;
+      suprSendInstance._user_identified = true;
+      this.web_push.update_subscription();
+      this.track(internal_events.user_login);
+    }
+  }
+
+  track(event, props = {}) {
+    if (event === undefined) {
+      return;
+    } else if (
+      !utils.is_internal_event(event) &&
+      utils.has_special_char(event)
+    ) {
+      console.log("Suprsend: key cannot start with $ or ss_");
+      return;
+    }
+    const super_props = utils.get_parsed_local_store_data(
+      constants.super_properties_key
+    );
+    const formatted_data = utils.format_props({ key: props });
+    const final_data = {
+      ...formatted_data,
+      ...suprSendInstance.env_properties,
+      ...super_props,
+      $current_url: window.location.href,
+    };
+    utils.batch_or_call({
+      event: String(event),
+      distinct_id: suprSendInstance.distinct_id,
+      env: config.env_key,
+      properties: final_data,
+      $insert_id: utils.uuid(),
+      $time: utils.epoch_milliseconds(),
     });
   }
-  suprSendInstance._user_identified = true;
-};
 
-SuprSend.prototype.track = function (event, props = {}) {
-  call_api("event/", {
-    event: event,
-    distinct_id: suprSendInstance.distinct_id,
-    ENV: suprSendInstance.ENV_API_Key,
-    properties: {
-      ...props,
-      ...suprSendInstance.env_properties,
-      current_url: window.location.href,
-      insert_id: utils.uuid(),
-      time: utils.epoch_seconds(),
-    },
-  });
-};
+  purchase_made(props) {
+    this.track(internal_events.purchase_made, props);
+  }
+
+  reset() {
+    this.track(internal_events.user_logout);
+    var distinct_id = utils.uuid();
+    utils.set_cookie(constants.distinct_id, distinct_id);
+    suprSendInstance = {
+      distinct_id: distinct_id,
+      _user_identified: false,
+    };
+    utils.remove_local_storage_item(constants.super_properties_key);
+    this.user = new User(suprSendInstance);
+    this.web_push = new WebPush(suprSendInstance);
+    SuprSend.setEnvProperties();
+  }
+}
 
 export default new SuprSend();

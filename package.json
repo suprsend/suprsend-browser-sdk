@@ -1,11 +1,12 @@
 {
-  "name": "suprsend-browser-sdk",
-  "version": "1.0.0",
+  "name": "@suprsend/web-sdk",
+  "version": "0.1.26",
   "description": "This is sdk used to integrate suprsend functionality in javascript applications",
-  "main": "index.js",
+  "main": "dist/cjs_bundle.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --config webpack.config.js"
+    "build": "rm -rf dist && webpack --env module_type=commonjs --env filename=cjs_bundle.js  && webpack --env module_type=window --env filename=cdn_bundle.js",
+    "publish-sdk": "npm run build && npm publish"
   },
   "keywords": [
     "suprsend",
@@ -13,12 +14,22 @@
     "suprsend-browser-sdk"
   ],
   "author": "Sivaram Katta",
-  "license": "ISC",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/suprsend/suprsend-browser.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@babel/core": "^7.15.0",
     "@babel/preset-env": "^7.15.0",
     "babel-loader": "^8.2.2",
     "webpack": "^5.51.1",
     "webpack-cli": "^4.8.0"
+  },
+  "dependencies": {
+    "libphonenumber-js": "^1.9.43"
   }
 }
