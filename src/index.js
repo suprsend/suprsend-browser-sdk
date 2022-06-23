@@ -15,7 +15,7 @@ class SuprSend {
     var distinct_id = utils.get_cookie(constants.distinct_id);
     if (!suprSendInstance) {
       suprSendInstance = {};
-      this.setCustomConfig(config_keys);
+      this._set_custom_config(config_keys);
     }
     if (!distinct_id) {
       distinct_id = utils.uuid();
@@ -25,7 +25,7 @@ class SuprSend {
     this.user = new User(suprSendInstance);
     this.web_push = new WebPush(suprSendInstance);
     this.web_push.update_subscription();
-    SuprSend.setEnvProperties();
+    SuprSend._set_env_properties();
     if (!initialisedAt) {
       utils.bulk_call_api();
       this.track(internal_events.app_launched);
@@ -33,7 +33,7 @@ class SuprSend {
     initialisedAt = new Date();
   }
 
-  static setEnvProperties() {
+  static _set_env_properties() {
     let device_id = utils.get_local_storage_item(constants.device_id_key);
     if (!device_id) {
       device_id = utils.uuid();
@@ -49,7 +49,7 @@ class SuprSend {
     };
   }
 
-  setCustomConfigProperty(key, value = "", mandatory = false) {
+  _set_custom_config_property(key, value = "", mandatory = false) {
     if (value) {
       config[key] = value;
     } else {
@@ -59,12 +59,16 @@ class SuprSend {
     }
   }
 
-  setCustomConfig(config_keys) {
-    this.setCustomConfigProperty("env_key", config_keys.env, true);
-    this.setCustomConfigProperty("signing_key", config_keys.signing_key, true);
-    this.setCustomConfigProperty("api_url", config_keys?.api_url);
-    this.setCustomConfigProperty("vapid_key", config_keys?.vapid_key);
-    this.setCustomConfigProperty(
+  _set_custom_config(config_keys) {
+    this._set_custom_config_property("env_key", config_keys.env, true);
+    this._set_custom_config_property(
+      "signing_key",
+      config_keys.signing_key,
+      true
+    );
+    this._set_custom_config_property("api_url", config_keys?.api_url);
+    this._set_custom_config_property("vapid_key", config_keys?.vapid_key);
+    this._set_custom_config_property(
       "service_worker_file",
       config_keys?.sw_file_name
     );
@@ -156,7 +160,7 @@ class SuprSend {
     utils.remove_local_storage_item(constants.super_properties_key);
     this.user = new User(suprSendInstance);
     this.web_push = new WebPush(suprSendInstance);
-    SuprSend.setEnvProperties();
+    SuprSend._set_env_properties();
   }
 }
 
