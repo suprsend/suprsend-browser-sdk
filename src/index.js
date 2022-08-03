@@ -149,7 +149,14 @@ class SuprSend {
     this.track(internal_events.purchase_made, props);
   }
 
-  reset() {
+  async reset(options = { unsubscribe_push: true }) {
+    // unsubscribe push
+    if (options?.unsubscribe_push) {
+      const subscription = await this.web_push._get_subscription();
+      if (subscription) {
+        this.user.remove_webpush(subscription);
+      }
+    }
     this.track(internal_events.user_logout);
     var distinct_id = utils.uuid();
     utils.set_cookie(constants.distinct_id, distinct_id);

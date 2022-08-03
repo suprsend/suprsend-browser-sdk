@@ -152,6 +152,14 @@ class User {
       $pushvendor: "vapid",
     });
   }
+
+  remove_webpush(push = "") {
+    this.remove({
+      $webpush: push,
+      $device_id: this.instance?.env_properties?.$device_id,
+      $pushvendor: "vapid",
+    });
+  }
 }
 
 export default User;
