@@ -1,6 +1,6 @@
 import utils from "./utils";
 import config from "./config";
-import { regex } from "./constants";
+import { regex, constants } from "./constants";
 import { parsePhoneNumber } from "libphonenumber-js";
 
 class User {
@@ -16,6 +16,25 @@ class User {
       $time: utils.epoch_milliseconds(),
       ...properties,
     });
+  }
+
+  _call_flush_immediately(properties) {
+    utils
+      .api(constants.api_events_route, {
+        env: config.env_key,
+        distinct_id: this.instance.distinct_id,
+        $insert_id: utils.uuid(),
+        $time: utils.epoch_milliseconds(),
+        ...properties,
+      })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Error in Fetch");
+        }
+      })
+      .catch(() => {
+        this._call_indentity(properties);
+      });
   }
 
   _allow_special_char_events = (key) => {
@@ -92,11 +111,15 @@ class User {
     }
   }
 
-  remove(key, value) {
+  remove(key, value, config = {}) {
     const allow_special_tags = this._allow_special_char_events(key);
     const data = utils.format_props({ key, value, allow_special_tags });
     if (!utils.is_empty(data)) {
-      this._call_indentity({ $remove: data });
+      if (config?.flush_immediately) {
+        this._call_flush_immediately({ $remove: data });
+      } else {
+        this._call_indentity({ $remove: data });
+      }
     }
   }
 
@@ -154,11 +177,15 @@ class User {
   }
 
   remove_webpush(push = "") {
-    this.remove({
-      $webpush: push,
-      $device_id: this.instance?.env_properties?.$device_id,
-      $pushvendor: "vapid",
-    });
+    this.remove(
+      {
+        $webpush: push,
+        $device_id: this.instance?.env_properties?.$device_id,
+        $pushvendor: "vapid",
+      },
+      null,
+      { flush_immediately: true }
+    );
   }
 }
 

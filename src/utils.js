@@ -280,4 +280,5 @@ export default {
   is_empty,
   bulk_call_api,
   is_internal_event,
+  api,
 };
