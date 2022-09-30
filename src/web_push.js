@@ -21,11 +21,10 @@ class WebPush {
     return navigator.serviceWorker
       .register(`/${config.service_worker_file}`)
       .then((registration) => {
-        console.log("Service worker successfully registered.");
         this._subscribe_push(registration);
       })
       .catch((err) => {
-        console.error("Unable to register service worker.", err);
+        console.error("SuprSend: Unable to register service worker.", err);
       });
   };
 
@@ -66,7 +65,7 @@ class WebPush {
       const subscription = await this._get_subscription();
       if (!subscription) {
         if (!config.vapid_key) {
-          console.log("Provide vapid key while calling init");
+          console.log("SuprSend: Provide vapid key while calling init");
           return;
         }
         const applicationServerKey = utils.urlB64ToUint8Array(config.vapid_key);
@@ -76,7 +75,7 @@ class WebPush {
         });
         this.user.add_webpush(subscription);
       } else {
-        console.log("Push already subscribed");
+        // pass
       }
     }
   };
@@ -98,7 +97,7 @@ class WebPush {
     if (this._check_push_support()) {
       this._subscribe_with_delay();
     } else {
-      console.log("OOPS, Web Push isn't supported");
+      console.log("SuprSend: Web Push isn't supported");
     }
   };
 

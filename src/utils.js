@@ -208,7 +208,7 @@ function format_props({ key, value, allow_special_tags = false }) {
     for (let item in key) {
       if (key[item] !== undefined) {
         if (!allow_special_tags && has_special_char(item)) {
-          console.log("Suprsend: key cannot start with $ or ss_");
+          console.log("SuprSend: key cannot start with $ or ss_");
           continue;
         }
         formatted_data[String(item)] = key[item];
@@ -216,7 +216,7 @@ function format_props({ key, value, allow_special_tags = false }) {
     }
   } else if (value != undefined) {
     if (!allow_special_tags && has_special_char(String(key))) {
-      console.log("Suprsend: key cannot start with $ or ss_");
+      console.log("SuprSend: key cannot start with $ or ss_");
       return;
     }
     formatted_data = { [String(key)]: value };

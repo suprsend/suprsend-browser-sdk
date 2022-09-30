@@ -64,7 +64,7 @@ class User {
     if (regex.email.test(email)) {
       this.append(key, email);
     } else {
-      console.log("Suprsend: Provide valid Email ID");
+      console.log("SuprSend: Provide valid Email ID");
     }
   }
 
@@ -74,10 +74,10 @@ class User {
       if (mobile_number.isValid()) {
         this.append(key, mobile);
       } else {
-        console.log("Suprsend: Provide valid Mobile number");
+        console.log("SuprSend: Provide valid Mobile number");
       }
     } catch (err) {
-      console.log("Suprsend: Provide valid Mobile number");
+      console.log("SuprSend: Provide valid Mobile number");
     }
   }
 
@@ -129,7 +129,7 @@ class User {
       if (!utils.has_special_char(key)) {
         formatted_data = [key];
       } else {
-        console.log("Suprsend: key cannot start with $ or ss_");
+        console.log("SuprSend: key cannot start with $ or ss_");
       }
     } else if (Array.isArray(key)) {
       formatted_data = [];

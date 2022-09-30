@@ -122,7 +122,7 @@ class SuprSend {
       !utils.is_internal_event(event) &&
       utils.has_special_char(event)
     ) {
-      console.log("Suprsend: key cannot start with $ or ss_");
+      console.log("SuprSend: key cannot start with $ or ss_");
       return;
     }
     const super_props = utils.get_parsed_local_store_data(
