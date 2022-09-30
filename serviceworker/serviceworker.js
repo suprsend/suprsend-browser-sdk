@@ -63,7 +63,11 @@ function validate_notification(notification_obj) {
   var validated_notification_obj = {};
   for (var item in notification_obj) {
     if (valid_notification_params.includes(item)) {
-      if (url_fields.includes(item)) {
+      if (
+        url_fields.includes(item) &&
+        notification_obj[item] &&
+        !notification_obj[item].startsWith("http")
+      ) {
         validated_notification_obj[
           item
         ] = `${suprsend_config.imgkit_root}${notification_obj[item]}`;
