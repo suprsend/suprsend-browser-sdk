@@ -42,13 +42,13 @@ export interface SuprSend {
   init(
     ENV_API_KEY: string,
     SIGNING_KEY: string,
-    config_keys: {
+    config_keys?: {
       api_url?: string;
       vapid_key?: string;
       service_worker_file?: string;
     }
   ): void;
-  identify(unique_id: string): void;
+  identify(unique_id: any): void;
   track(event: string, properties?: Dictionary): void;
   purchase_made(properties: Dictionary): void;
   reset(options?: { unsubscribe_push?: boolean }): void;
