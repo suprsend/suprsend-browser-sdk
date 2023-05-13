@@ -262,7 +262,9 @@ function debounce(func, timeOut) {
 
   return (...args) => {
     if (timer) clearTimeout(timer);
-    timer = setTimeout(func, timeOut);
+    timer = setTimeout(() => {
+      func.apply(this, args);
+    }, timeOut);
     return timer;
   };
 }
@@ -273,13 +275,14 @@ function debounce_by_type(func, wait, options) {
 
   return (...args) => {
     const [searchType] = args;
+    const payload = args.slice(1);
 
     if (typeof memory[searchType] === "function") {
-      return memory[searchType](...args);
+      return memory[searchType](...payload);
     }
 
     memory[searchType] = debounce(func, wait, { ...options, leading: true });
-    return memory[searchType](...args);
+    return memory[searchType](...payload);
   };
 }
 

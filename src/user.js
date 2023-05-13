@@ -335,13 +335,17 @@ class User {
     return response?.["channel_preferences"];
   }
 
-  async _update_category_preferences(category = "", body = {}, brand_id = "") {
+  _update_category_preferences = async (
+    category = "",
+    body = {},
+    brand_id = ""
+  ) => {
     let url_path = `category/${category}`;
     const response = await this._update_preference_request(body, url_path, {
       brand_id,
     });
     return response;
-  }
+  };
 
   update_category_subscription_status(
     category = "",
@@ -393,7 +397,12 @@ class User {
       opt_out_channels,
     };
 
-    this._update_category_preferences(category, requestPayload, brand_id);
+    this.debounced_update_category_request(
+      category,
+      category,
+      requestPayload,
+      brand_id
+    );
   }
 
   async subscribe_category_channel(category = "", channel = "") {
@@ -446,7 +455,7 @@ class User {
       opt_out_channels,
     };
 
-    this._update_category_preferences(category, requestPayload);
+    this.debounced_update_category_request(category, category, requestPayload);
   }
 
   async unsubscribe_category_channel(category = "", channel = "") {
@@ -499,14 +508,14 @@ class User {
       opt_out_channels,
     };
 
-    this._update_category_preferences(category, requestPayload);
+    this.debounced_update_category_request(category, category, requestPayload);
   }
 
-  async _update_channel_preferences(body = {}) {
+  _update_channel_preferences = async (body = {}) => {
     let url_path = "channel_preference";
     const response = await this._update_preference_request(body, url_path);
     return response;
-  }
+  };
 
   async update_channel_preference(channel = "", type = "") {
     if (!this.preference_data) {
@@ -525,7 +534,7 @@ class User {
       }
     }
 
-    this._update_channel_preferences({
+    this.debounced_update_channel_request(channel_data.channel, {
       channel_preferences: [channel_data],
     });
   }
