@@ -2,12 +2,21 @@ import utils from "./utils";
 import config from "./config";
 import { regex, constants } from "./constants";
 import { parsePhoneNumber } from "libphonenumber-js";
+import create_signature from "./encryption";
 
 class User {
   constructor(instance) {
     this.instance = instance;
-    this.preference_base_url = `${config.api_url}/v1/subscriber/${instance.distinct_id}`;
+    this.preference_base_url = `/v1/subscriber/${instance.distinct_id}`;
     this._preference_data = null;
+    this.debounced_update_category_request = utils.debounce_by_type(
+      this._update_category_preferences,
+      config.flush_interval
+    );
+    this.debounced_update_channel_request = utils.debounce_by_type(
+      this._update_channel_preferences,
+      config.flush_interval
+    );
   }
 
   _call_indentity(properties) {
@@ -100,11 +109,28 @@ class User {
     ).toString();
 
     const full_url_path = query_params_string
-      ? `${route}/?${query_params_string}`
-      : route;
+      ? `${this.preference_base_url}/${route}/?${query_params_string}`
+      : `${this.preference_base_url}/${route}`;
+
+    const requested_date = new Date().toGMTString();
+    const signature = await create_signature(
+      "",
+      requested_date,
+      "GET",
+      full_url_path
+    );
+    const authorization = signature
+      ? `${config.env_key}:${signature}`
+      : config.env_key;
 
     try {
-      const resp = await fetch(`${this.preference_base_url}/${full_url_path}`);
+      const resp = await fetch(`${config.api_url}${full_url_path}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: authorization,
+          "x-amz-date": requested_date,
+        },
+      });
       if (resp.ok) {
         const respData = resp.json();
         return respData;
@@ -123,13 +149,30 @@ class User {
     ).toString();
 
     const full_url_path = query_params_string
-      ? `${route}/?${query_params_string}`
-      : route;
+      ? `${this.preference_base_url}/${route}/?${query_params_string}`
+      : `${this.preference_base_url}/${route}`;
+
+    const requested_date = new Date().toGMTString();
+    const bodyString = JSON.stringify(body);
+    const signature = await create_signature(
+      bodyString,
+      requested_date,
+      "POST",
+      full_url_path
+    );
+    const authorization = signature
+      ? `${config.env_key}:${signature}`
+      : config.env_key;
 
     try {
-      const resp = await fetch(`${this.preference_base_url}/${full_url_path}`, {
+      const resp = await fetch(`${config.api_url}${full_url_path}`, {
         method: "POST",
-        body,
+        body: bodyString,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: authorization,
+          "x-amz-date": requested_date,
+        },
       });
       if (resp.ok) {
         const respData = resp.json();
@@ -257,48 +300,46 @@ class User {
     );
   }
 
-  async get_full_preferences(brand_id = "") {
+  async get_full_preferences(args = {}) {
     let url_path = "full_preference";
-    let query_params = { brand_id };
+    let query_params = { brand_id: args?.brand_id };
 
     const response = await this._get_preference_request(url_path, query_params);
     this.preference_data = response;
     return this.preference_data;
   }
 
-  // async get_all_category_preferences(brand_id = "", config = {}) {
-  //   let url_path = "category";
-  //   const query_params = { brand_id, limit: config?.limit || 50 };
+  async get_all_category_preferences(args = {}) {
+    let url_path = "category";
+    const query_params = {
+      brand_id: args?.brand_id,
+      limit: args?.limit,
+      offset: args?.offset,
+    };
 
-  //   const response = await this._get_preference_request(url_path, query_params);
-  //   return response;
-  // }
+    const response = await this._get_preference_request(url_path, query_params);
+    return response;
+  }
 
-  // async get_category_preferences(category_id = "", brand_id = "") {
-  //   let url_path = `category/${category_id}`;
-  //   let query_params = { brand_id };
+  async get_category_preferences(category_id = "", args = {}) {
+    let url_path = `category/${category_id}`;
+    let query_params = { brand_id: args?.brand_id };
 
-  //   const response = await this._get_preference_request(url_path, query_params);
-  //   return response;
-  // }
+    const response = await this._get_preference_request(url_path, query_params);
+    return response;
+  }
 
-  // async get_channel_preferences() {
-  //   let url_path = `channel_preference`;
-  //   const response = await this._get_preference_request(url_path);
-  //   return response;
-  // }
+  async get_channel_preferences() {
+    let url_path = `channel_preference`;
+    const response = await this._get_preference_request(url_path);
+    return response?.["channel_preferences"];
+  }
 
   async _update_category_preferences(category = "", body = {}, brand_id = "") {
     let url_path = `category/${category}`;
     const response = await this._update_preference_request(body, url_path, {
       brand_id,
     });
-    return response;
-  }
-
-  async _update_channel_preferences(body = {}) {
-    let url_path = "channel_preference";
-    const response = await this._update_preference_request(body, url_path);
     return response;
   }
 
@@ -309,6 +350,7 @@ class User {
   ) {
     if (!this.preference_data) {
       console.log("Preferences data not set. Call get_full_preferences method");
+      return;
     }
     let subcategory_data;
     // optimistic update in local store
@@ -316,27 +358,39 @@ class User {
       let abort = false;
       if (header?.sections?.length > 0) {
         const sections = header.sections;
-        for (let subcategory of sections.subcategories) {
-          if (subcategory.slug === category) {
-            subcategory_data = subcategory;
-            if (subcategory.can_unsubscribe) {
-              subcategory.subscription_status = status;
-              abort = true;
-              break;
-            } else {
-              console.log("category status cannot be unsubscribers");
+        for (let section of sections) {
+          for (let subcategory of section.subcategories) {
+            if (subcategory.category === category) {
+              subcategory_data = subcategory;
+              if (subcategory.is_editable) {
+                subcategory.preference = status;
+                abort = true;
+                break;
+              } else {
+                console.log("category status cannot be unsubscribers");
+              }
             }
           }
+          if (abort) break;
         }
         if (abort) break;
       }
     }
 
+    if (!subcategory_data) {
+      console.log("category not found");
+      return;
+    }
+    const opt_out_channels = [];
+    subcategory_data.channels.forEach((channel) => {
+      if (channel.preference === "opt_out") {
+        opt_out_channels.push(channel.channel);
+      }
+    });
+
     const requestPayload = {
-      subscription_status: subcategory_data.subscription_status,
-      unsubscribed_channels: subcategory_data.channels.filter(
-        (channel) => channel.value === "opt_out"
-      ),
+      preference: subcategory_data.preference,
+      opt_out_channels,
     };
 
     this._update_category_preferences(category, requestPayload, brand_id);
@@ -345,35 +399,51 @@ class User {
   async subscribe_category_channel(category = "", channel = "") {
     if (!this.preference_data) {
       console.log("Preferences data not set. Call get_full_preferences method");
+      return;
     }
+
     let subcategory_data;
+
     // optimistic update in local store
     for (let header of this.preference_data.categories) {
       let abort = false;
       if (header?.sections?.length > 0) {
         const sections = header.sections;
-        for (let subcategory of sections.subcategories) {
-          if (subcategory.slug === category) {
-            subcategory_data = subcategory;
-            for (let channel_data of subcategory.channels) {
-              if (channel_data.slug === channel) {
-                channel_data.value = "opt_in";
-                abort = true;
-                break;
+        for (let section of sections) {
+          for (let subcategory of section.subcategories) {
+            if (subcategory.category === category) {
+              subcategory_data = subcategory;
+              for (let channel_data of subcategory.channels) {
+                if (channel_data.channel === channel) {
+                  channel_data.preference = "opt_in";
+                  abort = true;
+                  break;
+                }
               }
+              if (abort) break;
             }
-            if (abort) break;
           }
+          if (abort) break;
         }
         if (abort) break;
       }
     }
 
+    if (!subcategory_data) {
+      console.log("category not found");
+      return;
+    }
+
+    const opt_out_channels = [];
+    subcategory_data.channels.forEach((channel) => {
+      if (channel.preference === "opt_out") {
+        opt_out_channels.push(channel.channel);
+      }
+    });
+
     const requestPayload = {
-      subscription_status: subcategory_data.subscription_status,
-      unsubscribed_channels: subcategory_data.channels.filter(
-        (channel) => channel.value === "opt_out"
-      ),
+      preference: subcategory_data.preference,
+      opt_out_channels,
     };
 
     this._update_category_preferences(category, requestPayload);
@@ -382,48 +452,75 @@ class User {
   async unsubscribe_category_channel(category = "", channel = "") {
     if (!this.preference_data) {
       console.log("Preferences data not set. Call get_full_preferences method");
+      return;
     }
+
     let subcategory_data;
+
     // optimistic update in local store
     for (let header of this.preference_data.categories) {
       let abort = false;
       if (header?.sections?.length > 0) {
         const sections = header.sections;
-        for (let subcategory of sections.subcategories) {
-          if (subcategory.slug === category) {
-            subcategory_data = subcategory;
-            for (let channel_data of subcategory.channels) {
-              if (channel_data.slug === channel) {
-                channel_data.value = "opt_out";
-                abort = true;
-                break;
+        for (let section of sections) {
+          for (let subcategory of section.subcategories) {
+            if (subcategory.category === category) {
+              subcategory_data = subcategory;
+              for (let channel_data of subcategory.channels) {
+                if (channel_data.channel === channel) {
+                  channel_data.preference = "opt_out";
+                  abort = true;
+                  break;
+                }
               }
+              if (abort) break;
             }
-            if (abort) break;
           }
+          if (abort) break;
         }
         if (abort) break;
       }
     }
 
+    if (!subcategory_data) {
+      console.log("category not found");
+      return;
+    }
+
+    const opt_out_channels = [];
+    subcategory_data.channels.forEach((channel) => {
+      if (channel.preference === "opt_out") {
+        opt_out_channels.push(channel.channel);
+      }
+    });
+
     const requestPayload = {
-      subscription_status: subcategory_data.subscription_status,
-      unsubscribed_channels: subcategory_data.channels.filter(
-        (channel) => channel.value === "opt_out"
-      ),
+      preference: subcategory_data.preference,
+      opt_out_channels,
     };
 
     this._update_category_preferences(category, requestPayload);
   }
 
-  async update_channel_preference(channel = "", type = "") {
-    let channel_data;
-    const channel_preference = this.preference_data.channel_preference;
+  async _update_channel_preferences(body = {}) {
+    let url_path = "channel_preference";
+    const response = await this._update_preference_request(body, url_path);
+    return response;
+  }
 
-    for (let channel_item of channel_preference) {
+  async update_channel_preference(channel = "", type = "") {
+    if (!this.preference_data) {
+      console.log("Preferences data not set. Call get_full_preferences method");
+      return;
+    }
+
+    let channel_data;
+    const channel_preferences = this.preference_data.channel_preferences;
+
+    for (let channel_item of channel_preferences) {
       if (channel_item.channel === channel) {
         channel_data = channel_item;
-        channel_item.important_message_only = type === "required";
+        channel_item.is_restricted = type === "required";
         break;
       }
     }

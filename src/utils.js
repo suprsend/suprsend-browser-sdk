@@ -257,6 +257,32 @@ const is_empty = (value) => {
   }
 };
 
+function debounce(func, timeOut) {
+  let timer;
+
+  return (...args) => {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(func, timeOut);
+    return timer;
+  };
+}
+
+// https://gist.github.com/nzvtrk/1a444cdf6a86a5a6e6d6a34f0db19065
+function debounce_by_type(func, wait, options) {
+  const memory = {};
+
+  return (...args) => {
+    const [searchType] = args;
+
+    if (typeof memory[searchType] === "function") {
+      return memory[searchType](...args);
+    }
+
+    memory[searchType] = debounce(func, wait, { ...options, leading: true });
+    return memory[searchType](...args);
+  };
+}
+
 export default {
   uuid,
   epoch_milliseconds,
@@ -281,4 +307,5 @@ export default {
   bulk_call_api,
   is_internal_event,
   api,
+  debounce_by_type,
 };
