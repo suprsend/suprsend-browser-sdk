@@ -5,10 +5,10 @@ import mitt from "mitt";
 
 class Preferences {
   constructor(instance, emitter) {
+    this.ss_instance = instance;
     this._preference_data;
     this._preference_args;
     this._emitter = emitter;
-    this.preference_base_url = `/v1/subscriber/${instance.distinct_id}`;
 
     this._debounced_update_category_preferences = utils.debounce_by_type(
       this._update_category_preferences,
@@ -31,14 +31,15 @@ class Preferences {
   }
 
   async _get_request(route = "", query_params = {}) {
+    const preference_base_url = `/v1/subscriber/${this.ss_instance.distinct_id}`;
     const validated_query_params = this._validate_query_params(query_params);
     const query_params_string = new URLSearchParams(
       validated_query_params
     ).toString();
 
     const full_url_path = query_params_string
-      ? `${this.preference_base_url}/${route}/?${query_params_string}`
-      : `${this.preference_base_url}/${route}`;
+      ? `${preference_base_url}/${route}/?${query_params_string}`
+      : `${preference_base_url}/${route}`;
 
     const requested_date = new Date().toGMTString();
     const signature = await create_signature(
@@ -71,14 +72,15 @@ class Preferences {
   }
 
   async _update_request(body, route, query_params) {
+    const preference_base_url = `/v1/subscriber/${this.ss_instance.distinct_id}`;
     const validated_query_params = this._validate_query_params(query_params);
     const query_params_string = new URLSearchParams(
       validated_query_params
     ).toString();
 
     const full_url_path = query_params_string
-      ? `${this.preference_base_url}/${route}/?${query_params_string}`
-      : `${this.preference_base_url}/${route}`;
+      ? `${preference_base_url}/${route}/?${query_params_string}`
+      : `${preference_base_url}/${route}`;
 
     const requested_date = new Date().toGMTString();
     const bodyString = JSON.stringify(body);
