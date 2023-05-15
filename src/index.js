@@ -4,6 +4,7 @@ import User from "./user";
 import WebPush from "./web_push";
 import { constants, internal_events } from "./constants";
 import { SSConfigurationError } from "./errors";
+import mitt from "mitt";
 
 var suprSendInstance;
 export var initialisedAt;
@@ -22,8 +23,11 @@ class SuprSend {
       utils.set_cookie(constants.distinct_id, distinct_id);
     }
     suprSendInstance.distinct_id = distinct_id;
-    this.user = new User(suprSendInstance);
+
+    this.emitter = mitt();
+    this.user = new User(suprSendInstance, this.emitter);
     this.web_push = new WebPush(suprSendInstance);
+
     this.web_push.update_subscription();
     SuprSend._set_env_properties();
     if (!initialisedAt) {
@@ -157,6 +161,7 @@ class SuprSend {
         this.user.remove_webpush(subscription);
       }
     }
+    this.emitter.all.clear();
     this.track(internal_events.user_logout);
     var distinct_id = utils.uuid();
     utils.set_cookie(constants.distinct_id, distinct_id);
