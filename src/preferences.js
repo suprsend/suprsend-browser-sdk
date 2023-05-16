@@ -64,11 +64,22 @@ class Preferences {
         const respData = resp.json();
         return respData;
       }
-      console.log(`Error: ${resp.status}: ${resp.statusText}`);
+      return {
+        error: true,
+        api_error: true,
+        status_code: resp.status,
+        message: resp.statusText,
+        error_obj: null,
+      };
     } catch (e) {
-      console.log("Error", e);
+      return {
+        error: true,
+        api_error: false,
+        status_code: null,
+        message: e.message,
+        error_obj: e,
+      };
     }
-    return;
   }
 
   async _update_request(body, route, query_params) {
@@ -108,11 +119,22 @@ class Preferences {
         const respData = resp.json();
         return respData;
       }
-      console.log(`Error: ${resp.status}: ${resp.statusText}`);
+      return {
+        error: true,
+        api_error: true,
+        status_code: resp.status,
+        message: resp.statusText,
+        error_obj: null,
+      };
     } catch (e) {
-      console.log("Error", e);
+      return {
+        error: true,
+        api_error: false,
+        status_code: null,
+        message: e.message,
+        error_obj: e,
+      };
     }
-    return;
   }
 
   _update_category_preferences = async (
@@ -123,8 +145,9 @@ class Preferences {
   ) => {
     let url_path = `category/${category}`;
     const response = await this._update_request(body, url_path, args);
-
-    if (response) {
+    if (response?.error) {
+      this._emitter.emit("preferences_error", response);
+    } else {
       Object.assign(subcategory, response);
       this._emitter.emit("preferences_updated");
     }
@@ -134,7 +157,9 @@ class Preferences {
   _update_channel_preferences = async (body = {}) => {
     let url_path = "channel_preference";
     const response = await this._update_request(body, url_path);
-    if (response) {
+    if (response?.error) {
+      this._emitter.emit("preferences_error", response);
+    } else {
       await this.get_preferences(this._preference_args);
       this._emitter.emit("preferences_updated");
     }
@@ -154,8 +179,10 @@ class Preferences {
     let query_params = { brand_id: args?.brand_id };
 
     const response = await this._get_request(url_path, query_params);
-    this.data = response;
-    return this.data;
+    if (!response?.error) {
+      this.data = response;
+    }
+    return response;
   }
 
   async get_categories(args = {}) {
@@ -181,7 +208,7 @@ class Preferences {
   async get_overall_channel_preferences() {
     let url_path = `channel_preference`;
     const response = await this._get_request(url_path);
-    return response?.["channel_preferences"];
+    return response?.error ? response : response?.["channel_preferences"];
   }
 
   update_category_preference(
