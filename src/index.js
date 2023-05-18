@@ -161,7 +161,6 @@ class SuprSend {
         this.user.remove_webpush(subscription);
       }
     }
-    this.emitter.all.clear();
     this.track(internal_events.user_logout);
     var distinct_id = utils.uuid();
     utils.set_cookie(constants.distinct_id, distinct_id);
@@ -170,7 +169,7 @@ class SuprSend {
       _user_identified: false,
     };
     utils.remove_local_storage_item(constants.super_properties_key);
-    this.user = new User(suprSendInstance);
+    this.user = new User(suprSendInstance, this.emitter);
     this.web_push = new WebPush(suprSendInstance);
     SuprSend._set_env_properties();
   }
