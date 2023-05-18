@@ -1,7 +1,12 @@
 import create_signature from "./encryption";
 import config from "./config";
 import utils from "./utils";
-import mitt from "mitt";
+
+export const PreferenceOptions = { OPT_IN: "opt_in", OPT_OUT: "opt_out" };
+export const ChannelLevelPreferenceOptions = {
+  ALL: "all",
+  REQUIRED: "required",
+};
 
 class Preferences {
   constructor(instance, emitter) {
@@ -198,6 +203,13 @@ class Preferences {
   }
 
   async get_category(category = "", args = {}) {
+    if (!category) {
+      return {
+        error: true,
+        message: "Category parameter is missing",
+      };
+    }
+
     let url_path = `category/${category}`;
     let query_params = { brand_id: args?.brand_id };
 
@@ -208,36 +220,54 @@ class Preferences {
   async get_overall_channel_preferences() {
     let url_path = `channel_preference`;
     const response = await this._get_request(url_path);
-    return response?.error ? response : response?.["channel_preferences"];
+    return response;
   }
 
-  update_category_preference(
-    category = "",
-    status = "optin/optout",
-    args = {}
-  ) {
-    if (!this.data) {
-      console.log("Preferences data not set. Call get_full_preferences method");
-      return;
+  update_category_preference(category = "", preference = "", args = {}) {
+    if (
+      !category ||
+      ![PreferenceOptions.OPT_IN, PreferenceOptions.OPT_OUT].includes(
+        preference
+      )
+    ) {
+      return {
+        error: true,
+        message: !category
+          ? "Category parameter is missing"
+          : "Preference parameter is invalid",
+      };
     }
+
+    if (!this.data) {
+      return {
+        error: true,
+        message: "Call get_preferences method before performing action",
+      };
+    }
+
     let category_data;
+    let data_updated = false;
 
     // optimistic update in local store
     for (let section of this.data.sections) {
       let abort = false;
       for (let subcategory of section.subcategories) {
         if (subcategory.category === category) {
+          category_data = subcategory;
           if (subcategory.is_editable) {
-            if (subcategory.preference !== status) {
-              category_data = subcategory;
-              subcategory.preference = status;
+            if (subcategory.preference !== preference) {
+              subcategory.preference = preference;
+              data_updated = true;
               abort = true;
               break;
             } else {
-              console.log(`category is already ${status}ed`);
+              // console.log(`category is already ${status}ed`);
             }
           } else {
-            console.log("category preference is not editable");
+            return {
+              error: true,
+              message: "Category preference is not editable",
+            };
           }
         }
       }
@@ -245,12 +275,19 @@ class Preferences {
     }
 
     if (!category_data) {
-      console.log("category not found");
+      return {
+        error: true,
+        message: "Category is not found",
+      };
+    }
+
+    if (!data_updated) {
       return;
     }
+
     const opt_out_channels = [];
     category_data.channels.forEach((channel) => {
-      if (channel.preference === "opt_out") {
+      if (channel.preference === PreferenceOptions.OPT_OUT) {
         opt_out_channels.push(channel.channel);
       }
     });
@@ -272,36 +309,64 @@ class Preferences {
   update_channel_preference_in_category(
     channel = "",
     preference = "",
-    category = ""
+    category = "",
+    args = {}
   ) {
+    if (!channel || !category) {
+      return {
+        error: true,
+        message: !channel
+          ? "Channel parameter is missing"
+          : "Category parameter is missing",
+      };
+    } else if (
+      ![PreferenceOptions.OPT_IN, PreferenceOptions.OPT_OUT].includes(
+        preference
+      )
+    ) {
+      return {
+        error: true,
+        message: "Preference parameter is invalid",
+      };
+    }
+
     if (!this.data) {
-      console.log("Preferences data not set. Call get_full_preferences method");
-      return;
+      return {
+        error: true,
+        message: "Call get_preferences method before performing action",
+      };
     }
 
     let category_data;
+    let selected_channel_data;
+    let data_updated = false;
 
     // optimistic update in local store
     for (let section of this.data.sections) {
       let abort = false;
       for (let subcategory of section.subcategories) {
         if (subcategory.category === category) {
+          category_data = subcategory;
           for (let channel_data of subcategory.channels) {
             if (channel_data.channel === channel) {
+              selected_channel_data = channel_data;
               if (channel_data.is_editable) {
                 if (channel_data.preference !== preference) {
-                  category_data = subcategory;
                   channel_data.preference = preference;
-                  if (preference === "opt_in") {
-                    subcategory.preference = "opt_in";
+                  if (preference === PreferenceOptions.OPT_IN) {
+                    subcategory.preference = PreferenceOptions.OPT_IN;
                   }
+                  data_updated = true;
                   abort = true;
                   break;
                 } else {
-                  console.log(`channel is already ${preference}`);
+                  //  console.log(`channel is already ${preference}`);
                 }
               } else {
-                console.log("channel preference is not editable");
+                return {
+                  error: true,
+                  message: "Channel preference is not editable",
+                };
               }
             }
           }
@@ -312,13 +377,26 @@ class Preferences {
     }
 
     if (!category_data) {
-      console.log("category not found");
+      return {
+        error: true,
+        message: "Category not found",
+      };
+    }
+
+    if (!selected_channel_data) {
+      return {
+        error: true,
+        message: "Category's Channel not found",
+      };
+    }
+
+    if (!data_updated) {
       return;
     }
 
     const opt_out_channels = [];
     category_data.channels.forEach((channel) => {
-      if (channel.preference === "opt_out") {
+      if (channel.preference === PreferenceOptions.OPT_OUT) {
         opt_out_channels.push(channel.channel);
       }
     });
@@ -332,25 +410,56 @@ class Preferences {
       category,
       category,
       request_payload,
-      category_data
+      category_data,
+      { brand_id: args?.brand_id }
     );
   }
 
-  update_overall_channel_preference(channel = "", type = "") {
+  update_overall_channel_preference(channel = "", preference = "") {
+    if (
+      !channel ||
+      ![
+        ChannelLevelPreferenceOptions.ALL,
+        ChannelLevelPreferenceOptions.REQUIRED,
+      ].includes(preference)
+    ) {
+      return {
+        error: true,
+        message: !channel
+          ? "Channel parameter is missing"
+          : "Preference parameter is invalid",
+      };
+    }
+
     if (!this.data) {
-      console.log("Preferences data not set. Call get_full_preferences method");
-      return;
+      return {
+        error: true,
+        message: "Call get_preferences method before performing action",
+      };
     }
 
     let channel_data;
-    const channel_preferences = this.data.channel_preferences;
+    let data_updated = false;
 
-    for (let channel_item of channel_preferences) {
+    for (let channel_item of this.data.channel_preferences) {
       if (channel_item.channel === channel) {
         channel_data = channel_item;
-        channel_item.is_restricted = type === "required";
+        channel_item.is_restricted =
+          preference === ChannelLevelPreferenceOptions.REQUIRED;
+        data_updated = true;
         break;
       }
+    }
+
+    if (!channel_data) {
+      return {
+        error: true,
+        message: "Channel data not found",
+      };
+    }
+
+    if (!data_updated) {
+      return;
     }
 
     this._debounced_update_channel_preferences(channel_data.channel, {

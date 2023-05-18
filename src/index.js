@@ -5,6 +5,10 @@ import WebPush from "./web_push";
 import { constants, internal_events } from "./constants";
 import { SSConfigurationError } from "./errors";
 import mitt from "mitt";
+export {
+  PreferenceOptions,
+  ChannelLevelPreferenceOptions,
+} from "./preferences";
 
 var suprSendInstance;
 export var initialisedAt;
