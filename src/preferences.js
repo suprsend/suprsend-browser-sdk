@@ -440,14 +440,17 @@ class Preferences {
 
     let channel_data;
     let data_updated = false;
+    const preference_restricted =
+      preference === ChannelLevelPreferenceOptions.REQUIRED;
 
     for (let channel_item of this.data.channel_preferences) {
       if (channel_item.channel === channel) {
         channel_data = channel_item;
-        channel_item.is_restricted =
-          preference === ChannelLevelPreferenceOptions.REQUIRED;
-        data_updated = true;
-        break;
+        if (channel_item.is_restricted !== preference_restricted) {
+          channel_item.is_restricted = preference_restricted;
+          data_updated = true;
+          break;
+        }
       }
     }
 
