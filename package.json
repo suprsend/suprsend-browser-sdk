@@ -1,6 +1,6 @@
 {
   "name": "@suprsend/web-sdk",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "This is sdk used to integrate suprsend functionality in javascript applications",
   "main": "dist/cjs_bundle.js",
   "scripts": {
@@ -31,6 +31,7 @@
     "webpack-cli": "^4.8.0"
   },
   "dependencies": {
-    "libphonenumber-js": "^1.10.7"
+    "libphonenumber-js": "^1.10.7",
+    "mitt": "^3.0.0"
   }
 }

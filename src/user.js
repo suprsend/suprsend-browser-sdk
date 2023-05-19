@@ -2,10 +2,12 @@ import utils from "./utils";
 import config from "./config";
 import { regex, constants } from "./constants";
 import { parsePhoneNumber } from "libphonenumber-js";
+import Preferences from "./preferences";
 
 class User {
-  constructor(instance) {
+  constructor(instance, emitter) {
     this.instance = instance;
+    this.preferences = new Preferences(this.instance, emitter);
   }
 
   _call_indentity(properties) {
