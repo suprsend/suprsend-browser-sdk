@@ -1,3 +1,5 @@
+import { Emitter } from "mitt";
+
 interface Dictionary {
   [key: string]: any;
 }
@@ -11,6 +13,11 @@ export enum ChannelLevelPreferenceOptions {
   ALL = "all",
   REQUIRED = "required",
 }
+
+type EmitterEvents = {
+  preferences_updated?: null;
+  preferences_error: PreferenceErrorData;
+};
 
 interface CategoryChannel {
   channel: string;
@@ -161,6 +168,7 @@ export interface SuprSend {
 
   user: User;
   web_push: WebPush;
+  emitter: Emitter<EmitterEvents>;
 }
 
 declare const suprsend: SuprSend;
