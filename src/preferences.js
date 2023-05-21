@@ -154,7 +154,7 @@ class Preferences {
       this._emitter.emit("preferences_error", response);
     } else {
       Object.assign(subcategory, response);
-      this._emitter.emit("preferences_updated");
+      this._emitter.emit("preferences_updated", this.data);
     }
     return response;
   };
@@ -166,7 +166,7 @@ class Preferences {
       this._emitter.emit("preferences_error", response);
     } else {
       await this.get_preferences(this._preference_args);
-      this._emitter.emit("preferences_updated");
+      this._emitter.emit("preferences_updated", this.data);
     }
     return response;
   };
@@ -282,7 +282,7 @@ class Preferences {
     }
 
     if (!data_updated) {
-      return;
+      return this.data;
     }
 
     const opt_out_channels = [];
@@ -304,6 +304,8 @@ class Preferences {
       category_data,
       { brand_id: args?.brand_id }
     );
+
+    return this.data;
   }
 
   update_channel_preference_in_category(
@@ -391,7 +393,7 @@ class Preferences {
     }
 
     if (!data_updated) {
-      return;
+      return this.data;
     }
 
     const opt_out_channels = [];
@@ -413,6 +415,8 @@ class Preferences {
       category_data,
       { brand_id: args?.brand_id }
     );
+
+    return this.data;
   }
 
   update_overall_channel_preference(channel = "", preference = "") {
@@ -462,12 +466,14 @@ class Preferences {
     }
 
     if (!data_updated) {
-      return;
+      return this.data;
     }
 
     this._debounced_update_channel_preferences(channel_data.channel, {
       channel_preferences: [channel_data],
     });
+
+    return this.data;
   }
 }
 

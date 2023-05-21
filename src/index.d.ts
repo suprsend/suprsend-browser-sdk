@@ -15,7 +15,7 @@ export enum ChannelLevelPreferenceOptions {
 }
 
 type EmitterEvents = {
-  preferences_updated?: null;
+  preferences_updated: PreferenceData;
   preferences_error: PreferenceErrorData;
 };
 
@@ -95,7 +95,7 @@ interface Preferences {
     args?: {
       brand_id?: string;
     }
-  ): void | PreferenceErrorData;
+  ): PreferenceData | PreferenceErrorData;
 
   update_channel_preference_in_category(
     channel: string,
@@ -104,12 +104,12 @@ interface Preferences {
     args?: {
       brand_id?: string;
     }
-  ): void | PreferenceErrorData;
+  ): PreferenceData | PreferenceErrorData;
 
   update_overall_channel_preference(
     channel: string,
     preference: ChannelLevelPreferenceOptions
-  ): void | PreferenceErrorData;
+  ): PreferenceData | PreferenceErrorData;
 }
 
 interface User {
