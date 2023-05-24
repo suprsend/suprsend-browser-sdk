@@ -58,7 +58,7 @@ interface PreferenceErrorData {
   error_obj?: Error | null;
 }
 
-interface GetPreferencesResponse extends PreferenceData, PreferenceErrorData {}
+interface PreferencesResponse extends PreferenceData, PreferenceErrorData {}
 
 interface GetCategoriesResponse extends PreferenceErrorData {
   meta: { count: number; limit: number; offset: number };
@@ -72,9 +72,7 @@ interface GetOverAllChannelPreferencesResponse extends PreferenceErrorData {
 interface Preferences {
   data: PreferenceData;
 
-  get_preferences(args?: {
-    brand_id?: string;
-  }): Promise<GetPreferencesResponse>;
+  get_preferences(args?: { brand_id?: string }): Promise<PreferencesResponse>;
 
   get_categories(args?: {
     brand_id?: string;
@@ -95,7 +93,7 @@ interface Preferences {
     args?: {
       brand_id?: string;
     }
-  ): PreferenceData | PreferenceErrorData;
+  ): PreferencesResponse;
 
   update_channel_preference_in_category(
     channel: string,
@@ -104,12 +102,12 @@ interface Preferences {
     args?: {
       brand_id?: string;
     }
-  ): PreferenceData | PreferenceErrorData;
+  ): PreferencesResponse;
 
   update_overall_channel_preference(
     channel: string,
     preference: ChannelLevelPreferenceOptions
-  ): PreferenceData | PreferenceErrorData;
+  ): PreferencesResponse;
 }
 
 interface User {
