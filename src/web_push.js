@@ -106,6 +106,10 @@ class WebPush {
     return !!subscription;
   };
 
+  notification_permission() {
+    return Notification.permission;
+  }
+
   // unsubscribe_push = () => {
   //   navigator.serviceWorker.ready
   //     .then((registration) => {

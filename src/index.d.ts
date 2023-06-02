@@ -146,6 +146,7 @@ interface User {
 
 export interface WebPush {
   register_push(): void;
+  notification_permission(): NotificationPermission;
 }
 
 export interface SuprSend {
