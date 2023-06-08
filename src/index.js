@@ -160,7 +160,7 @@ class SuprSend {
   async reset(options = { unsubscribe_push: true }) {
     // unsubscribe push
     if (options?.unsubscribe_push) {
-      const subscription = await this.web_push._get_subscription();
+      const subscription = await this.web_push._get_subscription_without_wait();
       if (subscription) {
         this.user.remove_webpush(subscription);
       }
