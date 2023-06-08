@@ -28,6 +28,18 @@ class WebPush {
       });
   };
 
+  _get_subscription_without_wait = async () => {
+    const registration = await navigator.serviceWorker.getRegistration();
+    if (!registration) return;
+
+    return registration.pushManager
+      .getSubscription()
+      .then(async (subscription) => {
+        if (!subscription) return;
+        return subscription;
+      });
+  };
+
   _get_subscription = () => {
     return navigator.serviceWorker.ready
       .then((registration) => {
@@ -102,7 +114,7 @@ class WebPush {
   };
 
   is_subscribed = async () => {
-    const subscription = await this._get_subscription();
+    const subscription = await this._get_subscription_without_wait();
     return !!subscription;
   };
 
