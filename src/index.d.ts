@@ -72,17 +72,17 @@ interface GetOverAllChannelPreferencesResponse extends PreferenceErrorData {
 interface Preferences {
   data: PreferenceData;
 
-  get_preferences(args?: { brand_id?: string }): Promise<PreferencesResponse>;
+  get_preferences(args?: { tenant_id?: string }): Promise<PreferencesResponse>;
 
   get_categories(args?: {
-    brand_id?: string;
+    tenant_id?: string;
     limit?: number;
     offset?: number;
   }): Promise<GetCategoriesResponse>;
 
   get_category(
     category: string,
-    args?: { brand_id?: string }
+    args?: { tenant_id?: string }
   ): Promise<Category>;
 
   get_overall_channel_preferences(): Promise<GetOverAllChannelPreferencesResponse>;
@@ -91,7 +91,7 @@ interface Preferences {
     category: string,
     preference: PreferenceOptions,
     args?: {
-      brand_id?: string;
+      tenant_id?: string;
     }
   ): PreferencesResponse;
 
@@ -100,7 +100,7 @@ interface Preferences {
     preference: PreferenceOptions,
     category: string,
     args?: {
-      brand_id?: string;
+      tenant_id?: string;
     }
   ): PreferencesResponse;
 

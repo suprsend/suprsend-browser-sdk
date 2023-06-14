@@ -181,7 +181,7 @@ class Preferences {
 
   async get_preferences(args = {}) {
     let url_path = "full_preference";
-    let query_params = { brand_id: args?.brand_id };
+    let query_params = { tenant_id: args?.tenant_id };
 
     const response = await this._get_request(url_path, query_params);
     if (!response?.error) {
@@ -193,7 +193,7 @@ class Preferences {
   async get_categories(args = {}) {
     let url_path = "category";
     const query_params = {
-      brand_id: args?.brand_id,
+      tenant_id: args?.tenant_id,
       limit: args?.limit,
       offset: args?.offset,
     };
@@ -211,7 +211,7 @@ class Preferences {
     }
 
     let url_path = `category/${category}`;
-    let query_params = { brand_id: args?.brand_id };
+    let query_params = { tenant_id: args?.tenant_id };
 
     const response = await this._get_request(url_path, query_params);
     return response;
@@ -302,7 +302,7 @@ class Preferences {
       category,
       request_payload,
       category_data,
-      { brand_id: args?.brand_id }
+      { tenant_id: args?.tenant_id }
     );
 
     return this.data;
@@ -413,7 +413,7 @@ class Preferences {
       category,
       request_payload,
       category_data,
-      { brand_id: args?.brand_id }
+      { tenant_id: args?.tenant_id }
     );
 
     return this.data;
