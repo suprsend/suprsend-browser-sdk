@@ -12,7 +12,7 @@ class Preferences {
   constructor(instance, emitter) {
     this.ss_instance = instance;
     this._preference_data;
-    this._preference_args;
+    this._preference_args; // used internally after over_all_channel_preferences update
     this._emitter = emitter;
 
     this._debounced_update_category_preferences = utils.debounce_by_type(
@@ -181,6 +181,7 @@ class Preferences {
 
   async get_preferences(args = {}) {
     let url_path = "full_preference";
+    this._preference_args = args;
     let query_params = { tenant_id: args?.tenant_id };
 
     const response = await this._get_request(url_path, query_params);
