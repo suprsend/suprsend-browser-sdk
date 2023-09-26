@@ -1,6 +1,6 @@
 {
   "name": "@suprsend/web-sdk",
-  "version": "1.2.6",
+  "version": "1.3.0",
   "description": "This is sdk used to integrate suprsend functionality in javascript applications",
   "main": "dist/cjs_bundle.js",
   "scripts": {
