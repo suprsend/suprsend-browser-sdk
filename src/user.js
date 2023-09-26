@@ -69,6 +69,22 @@ class User {
     }
   }
 
+  _validate_mobile_and_send(key, mobile) {
+    try {
+      if (regex.mobile.test(mobile)) {
+        this.append(key, mobile);
+      } else {
+        console.log(
+          "SuprSend: Provide valid Mobile number as per E.164 standard"
+        );
+      }
+    } catch (err) {
+      console.log(
+        "SuprSend: Provide valid Mobile number as per E.164 standard"
+      );
+    }
+  }
+
   set(key, value) {
     const data = utils.format_props({ key, value });
     if (!utils.is_empty(data)) {
@@ -141,7 +157,7 @@ class User {
   }
 
   add_sms(mobile = "") {
-    this.append("$sms", mobile);
+    this._validate_mobile_and_send("$sms", mobile);
   }
 
   remove_sms(mobile = "") {
@@ -149,7 +165,7 @@ class User {
   }
 
   add_whatsapp(mobile = "") {
-    this.append("$whatsapp", mobile);
+    this._validate_mobile_and_send("$whatsapp", mobile);
   }
 
   remove_whatsapp(mobile = "") {

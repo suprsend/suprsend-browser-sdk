@@ -47,4 +47,4 @@ export const os_useragent_map = {
   Linux: "Linux",
 };
 
-export const regex = { email: /\S+@\S+\.\S+/ };
+export const regex = { email: /\S+@\S+\.\S+/, mobile: /^\+[1-9]\d{1,14}$/ };
