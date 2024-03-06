@@ -103,7 +103,11 @@ function browser() {
 function browser_version() {
   const userAgent = navigator.userAgent;
   const browser_name = browser();
-  for (let regex_item of browser_version_useragent_map[browser_name]) {
+  const regexItems = browser_version_useragent_map[browser_name];
+
+  if (!regexItems || !browser_name) return "";
+
+  for (let regex_item of regexItems) {
     const regex = regex_item;
     if (regex) {
       const result = userAgent.match(regex);
