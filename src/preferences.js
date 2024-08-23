@@ -182,7 +182,10 @@ class Preferences {
   async get_preferences(args = {}) {
     let url_path = "full_preference";
     this._preference_args = args;
-    let query_params = { tenant_id: args?.tenant_id };
+    let query_params = {
+      tenant_id: args?.tenant_id,
+      show_opt_out_channels: args?.show_opt_out_channels,
+    };
 
     const response = await this._get_request(url_path, query_params);
     if (!response?.error) {
@@ -195,6 +198,7 @@ class Preferences {
     let url_path = "category";
     const query_params = {
       tenant_id: args?.tenant_id,
+      show_opt_out_channels: args?.show_opt_out_channels,
       limit: args?.limit,
       offset: args?.offset,
     };
@@ -212,7 +216,10 @@ class Preferences {
     }
 
     let url_path = `category/${category}`;
-    let query_params = { tenant_id: args?.tenant_id };
+    let query_params = {
+      tenant_id: args?.tenant_id,
+      show_opt_out_channels: args?.show_opt_out_channels,
+    };
 
     const response = await this._get_request(url_path, query_params);
     return response;
@@ -248,6 +255,7 @@ class Preferences {
 
     let category_data;
     let data_updated = false;
+    let show_opt_out_channels = args?.show_opt_out_channels;
 
     // optimistic update in local store
     for (let section of this.data.sections) {
@@ -295,7 +303,10 @@ class Preferences {
 
     const request_payload = {
       preference: category_data.preference,
-      opt_out_channels,
+      opt_out_channels:
+        show_opt_out_channels && preference === PreferenceOptions.OPT_IN
+          ? null
+          : opt_out_channels,
     };
 
     this._debounced_update_category_preferences(
@@ -303,7 +314,10 @@ class Preferences {
       category,
       request_payload,
       category_data,
-      { tenant_id: args?.tenant_id }
+      {
+        tenant_id: args?.tenant_id,
+        show_opt_out_channels: args?.show_opt_out_channels,
+      }
     );
 
     return this.data;
@@ -404,8 +418,15 @@ class Preferences {
       }
     });
 
+    const category_preference =
+      args?.show_opt_out_channels &&
+      category_data.preference === PreferenceOptions.OPT_OUT &&
+      preference === PreferenceOptions.OPT_IN
+        ? PreferenceOptions.OPT_IN
+        : category_data.preference;
+
     const request_payload = {
-      preference: category_data.preference,
+      preference: category_preference,
       opt_out_channels,
     };
 
@@ -414,7 +435,10 @@ class Preferences {
       category,
       request_payload,
       category_data,
-      { tenant_id: args?.tenant_id }
+      {
+        tenant_id: args?.tenant_id,
+        show_opt_out_channels: args?.show_opt_out_channels,
+      }
     );
 
     return this.data;
