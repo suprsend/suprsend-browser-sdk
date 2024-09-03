@@ -1,6 +1,6 @@
 import config from "./config";
 import { constants } from "./constants";
-import { md5 } from "js-md5";
+import md5 from "blueimp-md5";
 
 const getUtf8Bytes = (str) =>
   new Uint8Array(
