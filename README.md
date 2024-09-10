@@ -2,6 +2,13 @@
 
 Suprsend Javascript SDK for browsers
 
+> 📘 v2 version of @suprsend/web-sdk is available.
+>
+> We have changed the web SDK authentication from workspace key-secret to public key and JWT based authentication in v2. This is done to improve security in frontend applications.
+>
+> - For migrating to v2, follow this [guide](https://docs.suprsend.com/v1.2.2/docs/js-migration-from-v1)
+> - Refer the v2 SDK [documentation](https://docs.suprsend.com/v1.2.2/docs/javascript-sdk)
+
 ## Installation
 
 `suprsend-browser-sdk` is available as npm package. You can install using npm or yarn.
