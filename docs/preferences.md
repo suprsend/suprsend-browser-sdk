@@ -8,9 +8,9 @@ We'll also give an example code to add our pre-defined UI. This is how a typical
 
 # Pre-requisites
 
-- [Integrate Javascript SDK](https://docs.suprsend.com/docs/integrate-javascript-sdk)
-- [Identify user on login](https://docs.suprsend.com/docs/javascript-create-user#how-suprsend-identifies-a-user) and [reset on logout](https://docs.suprsend.com/docs/javascript-create-user#step-2--call-reset-to-clear-user-data-on-log-out) to ensure that preference changes are tagged to the correct user
-- [Configure notification categories](https://docs.suprsend.com/docs/preferences#creating--updating-notification-categories) on SuprSend dashboard
+- [Integrate Javascript SDK](https://github.com/suprsend/suprsend-browser-sdk/blob/main/docs/integrate-sdk.md)
+- [Identify user on login](https://github.com/suprsend/suprsend-browser-sdk/blob/main/docs/create-user.md) and [reset on logout](https://github.com/suprsend/suprsend-browser-sdk/blob/main/docs/create-user.md) to ensure that preference changes are tagged to the correct user
+- [Configure notification categories](https://docs.suprsend.com/docs/preferences) on SuprSend dashboard
 
 <br />
 
@@ -20,20 +20,20 @@ All preference methods and properties are available under **_suprsend.user.prefe
 
 ### Properties
 
-1. [data](https://docs.suprsend.com/docs/js-preferences#data-property) - The data set you'll need to populate the categories and channels on user's preference page
+1. data - The data set you'll need to populate the categories and channels on user's preference page
 
 ### Methods
 
-1. [get_preferences](https://docs.suprsend.com/docs/js-preferences#get_preferences) - get full user preferences data from the SuprSend
-2. [update_category_preference](https://docs.suprsend.com/docs/js-preferences#update_category_preference) - method to update overall category preference when user opts out and opts in the category using category level switch.
+1. get_preferences - get full user preferences data from the SuprSend
+2. update_category_preference - method to update overall category preference when user opts out and opts in the category using category level switch.
 
 ![](https://files.readme.io/3fb9ea2-update_category.png)
 
-3. [update_channel_preference_in_category](https://docs.suprsend.com/docs/js-preferences#update_channel_preference_in_category) - method to update channel preference inside a category when user opts out and opts in a channel inside the category.
+3. update_channel_preference_in_category - method to update channel preference inside a category when user opts out and opts in a channel inside the category.
 
 ![](https://files.readme.io/f6806e6-channel-category-update.png)
 
-4. [update_overall_channel_preference](https://docs.suprsend.com/docs/js-preferences#update_overall_channel_preference) - method to update overall channel preference for instance if user wants to receive only important notifications on SMS.
+4. update_overall_channel_preference - method to update overall channel preference for instance if user wants to receive only important notifications on SMS.
 
 ![](https://files.readme.io/9491874-channel-update.png)
 
@@ -41,13 +41,13 @@ All preference methods and properties are available under **_suprsend.user.prefe
 
 ### Event Listeners
 
-1. [preferences_updated](https://docs.suprsend.com/docs/js-preferences#preferences_updated) - You'll get this event as soon as preference changes are updated. Response will return return the updated preference data object which you can use to update your UI.
-2. [preferences_error](https://docs.suprsend.com/docs/js-preferences#preferences_error) - This error event is fired when there are errors in API requests or implementation.
+1. preferences_updated - You'll get this event as soon as preference changes are updated. Response will return return the updated preference data object which you can use to update your UI.
+2. preferences_error - This error event is fired when there are errors in API requests or implementation.
 
 ### Enums
 
-1. [PreferenceOptions](https://docs.suprsend.com/docs/js-preferences#preferenceoptions) - Enum to read and update **category preference** and **channel preference in category**
-2. [ChannelLevelPreferenceOptions](https://docs.suprsend.com/docs/js-preferences#channellevelpreferenceoptions) - Enum to read and update overall **channel preference**
+1. PreferenceOptions - Enum to read and update **category preference** and **channel preference in category**
+2. ChannelLevelPreferenceOptions - Enum to read and update overall **channel preference**
 
 <br />
 
@@ -63,15 +63,15 @@ Preference Page contains 2 sections:
 
 To update category level preferences, you'll have to fetch the data from 3 sections
 
-- [Section](https://docs.suprsend.com/docs/js-preferences#1-sections) - to show sections like "**Product Updates**" in below example
-- [Category](https://docs.suprsend.com/docs/js-preferences#2-categories-sections---sub-categories) - to show categories and their overall status like "**Refunds**" in below example
-- [CategoryChannel](https://docs.suprsend.com/docs/js-preferences#3-category-channels-sections---sub-categories---channels) - to show communication channels inside the category and their status
+- Section - to show sections like "**Product Updates**" in below example
+- Category - to show categories and their overall status like "**Refunds**" in below example
+- CategoryChannel - to show communication channels inside the category and their status
 
 ![](https://files.readme.io/6001b46-section.png)
 
 <br />
 
-2. [Overall Channel-level preference](https://docs.suprsend.com/docs/js-preferences#4-overall-channel-preferences) - You can fetch this data from ChannelPreference section
+2. Overall Channel-level preference - You can fetch this data from ChannelPreference section
 
 ![](https://files.readme.io/79d71ba-image.png)
 
@@ -207,11 +207,11 @@ interface Section {
 
 <br />
 
-| Key           | Type             | Description                                                                                                                                          |
-| :------------ | :--------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- |
-| name          | string           | name of the section                                                                                                                                  |
-| description   | string           | description of the section                                                                                                                           |
-| subcategories | array of objects | [dataset of all sub-categories](https://docs.suprsend.com/docs/js-preferences#2-categories-sections---sub-categories) to be shown inside the section |
+| Key           | Type             | Description                                                  |
+| :------------ | :--------------- | :----------------------------------------------------------- |
+| name          | string           | name of the section                                          |
+| description   | string           | description of the section                                   |
+| subcategories | array of objects | dataset of all sub-categories to be shown inside the section |
 
 <br />
 
@@ -274,14 +274,14 @@ interface Category {
 
 <br />
 
-| Key         | Type              | Description                                                                                                                                                                                                                                   |
-| :---------- | :---------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| name        | string            | name of the category to be shown on the UI                                                                                                                                                                                                    |
-| category    | string            | This key is the id of the category which is used while updating the preference.                                                                                                                                                               |
-| description | string            | description of the category to be shown on the UI                                                                                                                                                                                             |
-| preference  | PreferenceOptions | This key indicates if the category's preference switch is on or off. Get **OPT_IN** when the switch is on and **OPT_OUT** when the switch is off                                                                                              |
-| is_editable | boolean           | Indicates if the preference switch button is disabled or not. If its value is false then the preference setting for that category can't be edited                                                                                             |
-| channels    | array of objects  | [dataset of all categorychannel ](https://docs.suprsend.com/docs/js-preferences#3-category-channels-sections---sub-categories---channels)to be shown below the sub-category. Loop through it to show checkboxes under every subcategory item. |
+| Key         | Type              | Description                                                                                                                                       |
+| :---------- | :---------------- | :------------------------------------------------------------------------------------------------------------------------------------------------ |
+| name        | string            | name of the category to be shown on the UI                                                                                                        |
+| category    | string            | This key is the id of the category which is used while updating the preference.                                                                   |
+| description | string            | description of the category to be shown on the UI                                                                                                 |
+| preference  | PreferenceOptions | This key indicates if the category's preference switch is on or off. Get **OPT_IN** when the switch is on and **OPT_OUT** when the switch is off  |
+| is_editable | boolean           | Indicates if the preference switch button is disabled or not. If its value is false then the preference setting for that category can't be edited |
+| channels    | array of objects  | dataset of all categorychannel to be shown below the sub-category. Loop through it to show checkboxes under every subcategory item.               |
 
 <br />
 

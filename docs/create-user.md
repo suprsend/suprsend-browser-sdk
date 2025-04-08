@@ -1,6 +1,6 @@
 ## Pre-requisites
 
-[Integrate Javascript SDK](https://docs.suprsend.com/docs/integrate-javascript-sdk)
+[Integrate Javascript SDK](https://github.com/suprsend/suprsend-browser-sdk/blob/main/docs/integrate-sdk.md)
 
 <br>
 
@@ -70,7 +70,7 @@ suprsend.user.add_whatsapp("+91XXXXXXXXXX"); // To add Whatsapp
 
 Webpush token will automatically get set at the time of user login. All you have to do is to integrate the push notification service in your website
 
-[Web Push Integration guide](https://docs.suprsend.com/docs/web-push-vendor-integration)
+[Web Push Integration guide](https://github.com/suprsend/suprsend-browser-sdk/blob/main/docs/web-push-vendor-integration.md)
 
 > 🚧 Country Code Mandatory
 >

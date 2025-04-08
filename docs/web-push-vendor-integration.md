@@ -1,7 +1,7 @@
 ## Pre-requisites
 
-1. For webpush to work, it is mandatory to install Javascript SDK. Please refer [Javascript SDK installation guide here.](https://docs.suprsend.com/docs/integrate-javascript-sdk)
-2. Call javascript SDK's methods [identify](https://docs.suprsend.com/docs/javascript-create-user#step-1--createidentify-a-new-user) and [reset](https://docs.suprsend.com/docs/javascript-create-user#step-2--call-reset-to-clear-user-data-on-log-out). This is needed as webpush token genetated will be attached to that identified user.
+1. For webpush to work, it is mandatory to install Javascript SDK. Please refer [Javascript SDK installation guide here.](https://github.com/suprsend/suprsend-browser-sdk/blob/main/docs/integrate-sdk.md)
+2. Call javascript SDK's methods [identify](https://github.com/suprsend/suprsend-browser-sdk/blob/main/docs/create-user.md) and [reset](https://github.com/suprsend/suprsend-browser-sdk/blob/main/docs/create-user.md). This is needed as webpush token genetated will be attached to that identified user.
 
 Note: Make sure your website uses `https` protocol.  
 <br>
@@ -34,7 +34,7 @@ init_workspace(WORKSPACE KEY);
 
 ## Step 2: Initialize Javascript SDK
 
-Use Javascript SDK to connect webpush to SuprSend service. For initializing SDK, you need **WORKSPACE KEY** and **WORKSPACE SECRET**. You will get both the tokens from [SuprSend dashboard](https://app.suprsend.com/) left navigation panel. For more details, check the [documentation on 'Workspaces'](https://docs.suprsend.com/docs/workspace).
+Use Javascript SDK to connect webpush to SuprSend service. For initializing SDK, you need **WORKSPACE KEY** and **WORKSPACE SECRET**. You will get both the tokens from [SuprSend dashboard](https://app.suprsend.com/) left navigation panel.
 
 SDK's`init` method accepts object as its third parameter, where you have to specify **`public vapid key`**.
 

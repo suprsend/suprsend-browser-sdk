@@ -2,8 +2,8 @@ In this section, we'll cover how to send events to the Suprsend platform from yo
 
 ## Pre-requisites
 
-1. [Integrate Javascript SDK](https://docs.suprsend.com/docs/integrate-javascript-sdk)
-2. [Create User Profile](https://docs.suprsend.com/docs/javascript-create-user)
+1. [Integrate Javascript SDK](https://github.com/suprsend/suprsend-browser-sdk/blob/main/docs/integrate-sdk.md)
+2. [Create User Profile](https://github.com/suprsend/suprsend-browser-sdk/blob/main/docs/create-user.md)
 3. [Create Template on SuprSend platform](https://docs.suprsend.com/docs/templates) - if you want to trigger workflow by passing the event
 4. [Create Workflow on SuprSend Platform](https://docs.suprsend.com/docs/workflows) - if you want to trigger workflow by passing the event
 
