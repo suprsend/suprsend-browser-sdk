@@ -9,6 +9,7 @@ Suprsend Javascript SDK for browsers
 > - For migrating to v2, follow this [guide](https://docs.suprsend.com/v1.2.2/docs/js-migration-from-v1)
 > - Refer the v2 SDK [documentation](https://docs.suprsend.com/v1.2.2/docs/javascript-sdk)
 > - Github [respository](https://github.com/suprsend/suprsend-web-sdk) link for v2 version of this sdk.
+> - Documentation for this SDK (v1) can be found [here](https://github.com/suprsend/suprsend-browser-sdk/blob/main/docs)
 
 ## Installation
 
@@ -38,4 +39,4 @@ import suprsend from "@suprsend/web-sdk";
 suprsend.init(WORKSPACE_KEY, WORKSPACE_SECRET); // Initialize SDK
 ```
 
-Refer full documentation [here](https://docs.suprsend.com/docs/javascript-sdk)
+Refer full documentation [here](https://github.com/suprsend/suprsend-browser-sdk/blob/main/docs)
